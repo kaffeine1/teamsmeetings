@@ -213,3 +213,6 @@ $string['maptouser'] = 'Associa a utente Moodle';
 $string['selectuser'] = 'Seleziona utente...';
 $string['map'] = 'Associa';
 $string['usermapped'] = 'Utente associato con successo e presenze aggiornate.';
+$string['testconnection'] = 'Test connessione';
+$string['connectionsuccessful'] = 'Connessione riuscita';
+$string['connectionfailed'] = 'Connessione fallita: {$a}';
