@@ -41,7 +41,7 @@ function teamsmeetings_add_instance($data, $mform = null) {
     $data->organizer = $USER->email;
     $teams_api = new \mod_teamsmeetings\external\teams_api();
     try {
-        $meeting_info = $teams_api->create_meeting($data);
+        $meeting_info = $teams_api->create_meeting($data, $USER->email);
 
         if ($meeting_info) {
             $data->meeting_id = $meeting_info->id;
@@ -87,7 +87,7 @@ function teamsmeetings_update_instance($data, $mform = null) {
     if (isset($data->update_teams_meeting) && $data->update_teams_meeting) {
         $teams_api = new \mod_teamsmeetings\external\teams_api();
         try {
-            $teams_api->update_meeting($data);
+            $teams_api->update_meeting($data, $data->organizer);
         } catch (\Exception $e) {
             debugging('Teams API update_meeting error: ' . $e->getMessage(), DEBUG_DEVELOPER);
             if (!empty($data->course)) {
