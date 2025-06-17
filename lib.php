@@ -26,18 +26,19 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * Add teamsmeetings instance
- * 
+ *
  * @param stdClass $data
  * @param mod_teamsmeetings_mod_form $mform
  * @return int new instance id
  */
 function teamsmeetings_add_instance($data, $mform = null) {
-    global $DB;
+    global $DB, $USER;
     
     $data->timecreated = time();
     $data->timemodified = time();
     
-    // Create Teams meeting via API
+    // Set organizer UPN and create Teams meeting via API
+    $data->organizer = $USER->email;
     $teams_api = new \mod_teamsmeetings\external\teams_api();
     try {
         $meeting_info = $teams_api->create_meeting($data);
@@ -67,7 +68,7 @@ function teamsmeetings_add_instance($data, $mform = null) {
 
 /**
  * Update teamsmeetings instance
- * 
+ *
  * @param stdClass $data
  * @param mod_teamsmeetings_mod_form $mform
  * @return bool
@@ -78,6 +79,10 @@ function teamsmeetings_update_instance($data, $mform = null) {
     $data->timemodified = time();
     $data->id = $data->instance;
     
+    // Preserve organizer
+    $existing = $DB->get_record('teamsmeetings', ['id' => $data->id], 'organizer');
+    $data->organizer = $existing->organizer;
+
     // Update Teams meeting via API if needed
     if (isset($data->update_teams_meeting) && $data->update_teams_meeting) {
         $teams_api = new \mod_teamsmeetings\external\teams_api();
@@ -96,7 +101,7 @@ function teamsmeetings_update_instance($data, $mform = null) {
 
 /**
  * Delete teamsmeetings instance
- * 
+ *
  * @param int $id
  * @return bool
  */
@@ -111,7 +116,8 @@ function teamsmeetings_delete_instance($id) {
     if ($meeting->meeting_id) {
         $teams_api = new \mod_teamsmeetings\external\teams_api();
         try {
-            $teams_api->delete_meeting($meeting->meeting_id);
+            // SOLUZIONE DEL CONFLITTO: Unisco il try/catch con la nuova chiamata API
+            $teams_api->delete_meeting($meeting->meeting_id, $meeting->organizer);
         } catch (\Exception $e) {
             debugging('Teams API delete_meeting error: ' . $e->getMessage(), DEBUG_DEVELOPER);
             add_to_log($meeting->course, 'teamsmeetings', 'error', '', $e->getMessage());
@@ -130,7 +136,7 @@ function teamsmeetings_delete_instance($id) {
 
 /**
  * Return the list of view actions
- * 
+ *
  * @return array
  */
 function teamsmeetings_get_view_actions() {
@@ -139,7 +145,7 @@ function teamsmeetings_get_view_actions() {
 
 /**
  * Return the list of post actions
- * 
+ *
  * @return array
  */
 function teamsmeetings_get_post_actions() {
@@ -148,7 +154,7 @@ function teamsmeetings_get_post_actions() {
 
 /**
  * Supports feature
- * 
+ *
  * @param string $feature
  * @return mixed
  */
@@ -173,7 +179,7 @@ function teamsmeetings_supports($feature) {
 
 /**
  * This function is used by the reset_course_userdata function in moodlelib.
- * 
+ *
  * @param $data the data submitted from the reset course.
  * @return array status array
  */
@@ -203,7 +209,7 @@ function teamsmeetings_reset_userdata($data) {
 
 /**
  * Log user attendance
- * 
+ *
  * @param int $meetingid
  * @param int $userid
  * @param string $action 'join' or 'leave'
@@ -252,7 +258,7 @@ function teamsmeetings_log_attendance($meetingid, $userid, $action, $sessionid =
 
 /**
  * Update attendance summary for a user
- * 
+ *
  * @param int $meetingid
  * @param int $userid
  */
@@ -291,7 +297,7 @@ function teamsmeetings_update_attendance_summary($meetingid, $userid) {
 
 /**
  * Get attendance report for a meeting
- * 
+ *
  * @param int $meetingid
  * @return array
  */
@@ -313,7 +319,7 @@ function teamsmeetings_get_attendance_report($meetingid) {
 
 /**
  * Get detailed sessions for a user in a meeting
- * 
+ *
  * @param int $meetingid
  * @param int $userid
  * @return array
