@@ -39,11 +39,18 @@ function teamsmeetings_add_instance($data, $mform = null) {
     
     // Create Teams meeting via API
     $teams_api = new \mod_teamsmeetings\external\teams_api();
-    $meeting_info = $teams_api->create_meeting($data);
-    
-    if ($meeting_info) {
-        $data->meeting_id = $meeting_info->id;
-        $data->join_url = $meeting_info->joinUrl;
+    try {
+        $meeting_info = $teams_api->create_meeting($data);
+
+        if ($meeting_info) {
+            $data->meeting_id = $meeting_info->id;
+            $data->join_url = $meeting_info->joinUrl;
+        }
+    } catch (\Exception $e) {
+        debugging('Teams API create_meeting error: ' . $e->getMessage(), DEBUG_DEVELOPER);
+        if (!empty($data->course)) {
+            add_to_log($data->course, 'teamsmeetings', 'error', '', $e->getMessage());
+        }
     }
     
     $data->id = $DB->insert_record('teamsmeetings', $data);
@@ -74,7 +81,14 @@ function teamsmeetings_update_instance($data, $mform = null) {
     // Update Teams meeting via API if needed
     if (isset($data->update_teams_meeting) && $data->update_teams_meeting) {
         $teams_api = new \mod_teamsmeetings\external\teams_api();
-        $teams_api->update_meeting($data);
+        try {
+            $teams_api->update_meeting($data);
+        } catch (\Exception $e) {
+            debugging('Teams API update_meeting error: ' . $e->getMessage(), DEBUG_DEVELOPER);
+            if (!empty($data->course)) {
+                add_to_log($data->course, 'teamsmeetings', 'error', '', $e->getMessage());
+            }
+        }
     }
     
     return $DB->update_record('teamsmeetings', $data);
@@ -96,7 +110,12 @@ function teamsmeetings_delete_instance($id) {
     // Delete Teams meeting via API
     if ($meeting->meeting_id) {
         $teams_api = new \mod_teamsmeetings\external\teams_api();
-        $teams_api->delete_meeting($meeting->meeting_id);
+        try {
+            $teams_api->delete_meeting($meeting->meeting_id);
+        } catch (\Exception $e) {
+            debugging('Teams API delete_meeting error: ' . $e->getMessage(), DEBUG_DEVELOPER);
+            add_to_log($meeting->course, 'teamsmeetings', 'error', '', $e->getMessage());
+        }
     }
     
     // Delete attendance records
