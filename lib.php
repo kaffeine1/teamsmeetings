@@ -50,9 +50,6 @@ function teamsmeetings_add_instance($data, $mform = null) {
     } catch (\Exception $e) {
         $msg = teamsmeetings_extract_error_message($e);
         debugging('Teams API create_meeting error: ' . $msg, DEBUG_DEVELOPER);
-        if (!empty($data->course)) {
-            add_to_log($data->course, 'teamsmeetings', 'error', '', $msg);
-        }
         \core\notification::add(get_string('meetingcreationerror', 'teamsmeetings', $msg),
             \core\output\notification::NOTIFY_ERROR);
     }
@@ -94,9 +91,6 @@ function teamsmeetings_update_instance($data, $mform = null) {
         } catch (\Exception $e) {
             $msg = teamsmeetings_extract_error_message($e);
             debugging('Teams API update_meeting error: ' . $msg, DEBUG_DEVELOPER);
-            if (!empty($data->course)) {
-                add_to_log($data->course, 'teamsmeetings', 'error', '', $msg);
-            }
             \core\notification::add(get_string('meetingupdateerror', 'teamsmeetings', $msg),
                 \core\output\notification::NOTIFY_ERROR);
         }
@@ -126,7 +120,6 @@ function teamsmeetings_delete_instance($id) {
         } catch (\Exception $e) {
             $msg = teamsmeetings_extract_error_message($e);
             debugging('Teams API delete_meeting error: ' . $msg, DEBUG_DEVELOPER);
-            add_to_log($meeting->course, 'teamsmeetings', 'error', '', $msg);
             \core\notification::add(get_string('meetingdeleteerror', 'teamsmeetings', $msg),
                 \core\output\notification::NOTIFY_ERROR);
         }

@@ -103,7 +103,6 @@ try {
 
     $msg = teamsmeetings_extract_error_message($e);
     debugging('Teams API sync error: ' . $msg, DEBUG_DEVELOPER);
-    add_to_log($course->id, 'teamsmeetings', 'error', '', $msg, $cm->id);
 
     redirect($returnurl, get_string('syncerrorwithmsg', 'teamsmeetings', $msg), 0,
         core\output\notification::NOTIFY_ERROR);
