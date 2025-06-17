@@ -287,7 +287,7 @@ class teams_api {
         $result = json_decode($response);
         
         if (isset($result->value)) {
-            return $this->process_attendance_records($result->value);
+            return $this->process_attendance_records($result->value, $meeting_id);
         }
         
         return false;
