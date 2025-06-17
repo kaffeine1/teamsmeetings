@@ -194,44 +194,51 @@ $table->is_downloading($download, 'teams_attendance_' . $teamsmeetings->id);
 $table->setup();
 
 // Get enrolled users
+// Prima ottieni tutti gli utenti iscritti
 $enrolledusers = get_enrolled_users($context, 'mod/teamsmeetings:view', 0, 'u.*', 'lastname, firstname');
 
-// Get attendance data
-$attendancedata = array();
-$sql = "SELECT u.id, u.firstname, u.lastname, u.email,
-               ta.join_time, ta.leave_time, ta.duration,
-               COUNT(DISTINCT ts.sessionid) as session_count
-        FROM {user} u
-        LEFT JOIN {teamsmeetings_attendance} ta ON ta.userid = u.id AND ta.meetingid = ?
-        LEFT JOIN {teamsmeetings_sessions} ts ON ts.userid = u.id AND ts.meetingid = ?
-        WHERE u.id IN (" . implode(',', array_keys($enrolledusers)) . ")
-        GROUP BY u.id, u.firstname, u.lastname, u.email, ta.join_time, ta.leave_time, ta.duration";
+// Poi ottieni i dati delle presenze (una riga per utente)
+$sql = "SELECT ta.userid, ta.join_time, ta.leave_time, ta.duration,
+               (SELECT COUNT(DISTINCT ts.sessionid) 
+                FROM {teamsmeetings_sessions} ts 
+                WHERE ts.userid = ta.userid AND ts.meetingid = ta.meetingid) as session_count
+        FROM {teamsmeetings_attendance} ta
+        WHERE ta.meetingid = :meetingid";
 
-$records = $DB->get_records_sql($sql, array($teamsmeetings->id, $teamsmeetings->id));
+$attendancedata = $DB->get_records_sql($sql, ['meetingid' => $teamsmeetings->id]);
 
-// Calculate meeting duration for attendance percentage
+// Calcola durata meeting per percentuale presenza
 $meetingduration = 0;
-if ($teamsmeetings->end_time) {
+if ($teamsmeetings->end_time > 0) {
     $meetingduration = $teamsmeetings->end_time - $teamsmeetings->start_time;
+} else {
+    // Se il meeting è ancora in corso, usa il tempo attuale
+    $meetingduration = time() - $teamsmeetings->start_time;
 }
 
+// Costruisci la tabella iterando sugli utenti iscritti
 foreach ($enrolledusers as $user) {
     $row = array();
     
+    // Link al profilo utente
     $userurl = new moodle_url('/user/view.php', array('id' => $user->id, 'course' => $course->id));
     $row[] = html_writer::link($userurl, fullname($user));
     $row[] = $user->email;
     
-    if (isset($records[$user->id]) && $records[$user->id]->join_time) {
-        $record = $records[$user->id];
-        $row[] = userdate($record->join_time, get_string('strftimedatetimeshort'));
-        $row[] = $record->leave_time ? userdate($record->leave_time, get_string('strftimedatetimeshort')) : '-';
-        $row[] = $record->duration ? format_time($record->duration) : '-';
-        $row[] = $record->session_count ?: 0;
+    // Verifica se l'utente ha dati di presenza
+    if (isset($attendancedata[$user->id])) {
+        $attendance = $attendancedata[$user->id];
         
-        // Calculate attendance percentage
+        $row[] = userdate($attendance->join_time, get_string('strftimedatetimeshort'));
+        $row[] = $attendance->leave_time ? 
+                 userdate($attendance->leave_time, get_string('strftimedatetimeshort')) : 
+                 get_string('stillconnected', 'teamsmeetings');
+        $row[] = format_time($attendance->duration);
+        $row[] = $attendance->session_count;
+        
+        // Calcola percentuale presenza
         if ($meetingduration > 0) {
-            $percentage = min(100, round(($record->duration / $meetingduration) * 100));
+            $percentage = min(100, round(($attendance->duration / $meetingduration) * 100));
             $badgeclass = 'badge ';
             if ($percentage >= 80) {
                 $badgeclass .= 'badge-success';
@@ -245,16 +252,16 @@ foreach ($enrolledusers as $user) {
             $row[] = '-';
         }
     } else {
-        // User didn't attend
+        // Utente non ha partecipato
         $row[] = '-';
         $row[] = '-';
-        $row[] = '-';
+        $row[] = '0';
         $row[] = '0';
         $row[] = html_writer::tag('span', '0%', array('class' => 'badge badge-danger'));
     }
     
     if (!$table->is_downloading()) {
-        // Actions column
+        // Colonna azioni
         $detailsurl = new moodle_url('/mod/teamsmeetings/attendance.php', array(
             'id' => $cm->id,
             'userid' => $user->id

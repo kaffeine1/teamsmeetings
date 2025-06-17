@@ -223,15 +223,15 @@ class teams_api {
     
     /**
      * Get attendance report for a meeting
+     * NOTA: Richiede OnlineMeetingArtifact.Read.All permission
+     * e potrebbe richiedere l'uso dell'endpoint Beta
      * 
      * @param string $meeting_id
      * @return array|false
      */
     public function get_attendance($meeting_id) {
-        // Note: This requires additional permissions and may need to use 
-        // the Beta endpoint or Teams Admin Center APIs
-        
-        $url = self::GRAPH_API_URL . '/me/onlineMeetings/' . $meeting_id . '/attendanceReports';
+        // Usa endpoint Beta per attendance reports
+        $url = 'https://graph.microsoft.com/beta/me/onlineMeetings/' . $meeting_id . '/attendanceReports';
         
         $headers = array(
             'Authorization: Bearer ' . $this->access_token,
@@ -244,12 +244,21 @@ class teams_api {
         
         $result = json_decode($response);
         
-        if (isset($result->value)) {
-            // Get the latest report
-            if (!empty($result->value)) {
-                $latest_report = end($result->value);
-                return $this->get_attendance_report_details($meeting_id, $latest_report->id);
+        // Gestione errore specifico per permessi insufficienti
+        if (isset($result->error)) {
+            if ($result->error->code === 'Forbidden' || $result->error->code === 'Unauthorized') {
+                debugging('Permessi insufficienti per accedere ai report presenze. ' .
+                        'Verificare che l\'app abbia il permesso OnlineMeetingArtifact.Read.All', 
+                        DEBUG_DEVELOPER);
+                return false;
             }
+            debugging('Errore API Teams: ' . $result->error->message, DEBUG_DEVELOPER);
+            return false;
+        }
+        
+        if (isset($result->value) && !empty($result->value)) {
+            $latest_report = end($result->value);
+            return $this->get_attendance_report_details($meeting_id, $latest_report->id);
         }
         
         return false;
@@ -290,16 +299,18 @@ class teams_api {
      * @param array $records
      * @return array
      */
-    private function process_attendance_records($records) {
+    private function process_attendance_records($records, $meetingid) {
         global $DB;
         
         $processed = array();
+        $unmatched = array();
         
         foreach ($records as $record) {
-            // Try to match Teams user with Moodle user
+            // Prova a matchare l'utente
             $user = $this->match_teams_user($record);
             
             if ($user) {
+                // Utente trovato - processa normalmente
                 $attendance = new \stdClass();
                 $attendance->userid = $user->id;
                 $attendance->email = $record->emailAddress;
@@ -320,7 +331,45 @@ class teams_api {
                 }
                 
                 $processed[] = $attendance;
+            } else {
+                // Utente non trovato - salva nei non mappati
+                $unmatched_user = new \stdClass();
+                $unmatched_user->meetingid = $meetingid;
+                $unmatched_user->teams_email = $record->emailAddress ?? '';
+                $unmatched_user->teams_displayname = $record->identity->displayName ?? '';
+                $unmatched_user->teams_id = $record->identity->id ?? '';
+                $unmatched_user->duration = $record->totalAttendanceInSeconds ?? 0;
+                $unmatched_user->timecreated = time();
+                
+                // Prendi prima e ultima sessione
+                if (isset($record->attendanceIntervals) && !empty($record->attendanceIntervals)) {
+                    $first = reset($record->attendanceIntervals);
+                    $last = end($record->attendanceIntervals);
+                    $unmatched_user->join_time = strtotime($first->joinDateTime);
+                    $unmatched_user->leave_time = strtotime($last->leaveDateTime);
+                }
+                
+                // Verifica se esiste già
+                $existing = $DB->get_record('teamsmeetings_unmatched_users', array(
+                    'meetingid' => $meetingid,
+                    'teams_email' => $unmatched_user->teams_email
+                ));
+                
+                if (!$existing) {
+                    $DB->insert_record('teamsmeetings_unmatched_users', $unmatched_user);
+                } else {
+                    // Aggiorna con ultimi dati
+                    $unmatched_user->id = $existing->id;
+                    $DB->update_record('teamsmeetings_unmatched_users', $unmatched_user);
+                }
+                
+                $unmatched[] = $unmatched_user;
             }
+        }
+        
+        // Se ci sono utenti non mappati, notifica
+        if (!empty($unmatched)) {
+            debugging('Found ' . count($unmatched) . ' unmatched Teams users for meeting ' . $meetingid, DEBUG_DEVELOPER);
         }
         
         return $processed;

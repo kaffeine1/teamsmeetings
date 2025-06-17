@@ -308,28 +308,106 @@ function teamsmeetings_get_user_sessions($meetingid, $userid) {
 }
 
 /**
- * Run cron tasks
+ * Run cron tasks - versione corretta
  */
 function teamsmeetings_cron() {
     global $DB;
     
-    // Update attendance data from Teams API
-    $meetings = $DB->get_records('teamsmeetings', array('end_time' => 0));
+    mtrace('Starting Teams attendance sync...');
     
-    foreach ($meetings as $meeting) {
-        if ($meeting->meeting_id) {
-            $teams_api = new \mod_teamsmeetings\external\teams_api();
-            $attendance_data = $teams_api->get_attendance($meeting->meeting_id);
-            
-            if ($attendance_data) {
-                // Process attendance data
-                foreach ($attendance_data as $participant) {
-                    // Update attendance records
-                    // This would need to map Teams user IDs to Moodle user IDs
-                }
-            }
-        }
+    // Seleziona solo meeting che necessitano sincronizzazione
+    $now = time();
+    $twodaysago = $now - (2 * 24 * 60 * 60);
+    
+    // Meeting terminati nelle ultime 48 ore o attualmente in corso
+    $sql = "SELECT * FROM {teamsmeetings} 
+            WHERE meeting_id IS NOT NULL 
+              AND ((end_time > :twodaysago AND end_time < :now) 
+                   OR (start_time < :now2 AND (end_time = 0 OR end_time > :now3)))
+            ORDER BY start_time DESC
+            LIMIT 20"; // Limita per evitare sovraccarico
+    
+    $params = array(
+        'twodaysago' => $twodaysago,
+        'now' => $now,
+        'now2' => $now,
+        'now3' => $now
+    );
+    
+    $meetings = $DB->get_records_sql($sql, $params);
+    
+    if (empty($meetings)) {
+        mtrace('No meetings to sync.');
+        return true;
     }
     
+    $teams_api = new \mod_teamsmeetings\external\teams_api();
+    $synced_meetings = 0;
+    $errors = 0;
+    
+    foreach ($meetings as $meeting) {
+        mtrace("Processing meeting: {$meeting->name} (ID: {$meeting->id})");
+        
+        try {
+            $attendance_data = $teams_api->get_attendance($meeting->meeting_id);
+            
+            if ($attendance_data === false) {
+                mtrace("  - No attendance data available");
+                continue;
+            }
+            
+            // Processa ogni partecipante
+            $synced_users = 0;
+            foreach ($attendance_data as $participant) {
+                // Usa la funzione esistente per mappare utente Teams -> Moodle
+                if (!isset($participant->userid)) {
+                    mtrace("  - Skipping unmatched participant: {$participant->email}");
+                    continue;
+                }
+                
+                // Pulisci sessioni esistenti per evitare duplicati
+                $DB->delete_records('teamsmeetings_sessions', array(
+                    'meetingid' => $meeting->id,
+                    'userid' => $participant->userid
+                ));
+                
+                // Inserisci nuove sessioni
+                if (isset($participant->sessions) && is_array($participant->sessions)) {
+                    foreach ($participant->sessions as $session) {
+                        $session_record = new stdClass();
+                        $session_record->meetingid = $meeting->id;
+                        $session_record->userid = $participant->userid;
+                        $session_record->sessionid = uniqid('teams_');
+                        $session_record->join_time = $session->join_time;
+                        $session_record->leave_time = $session->leave_time;
+                        $session_record->duration = $session->duration;
+                        $session_record->ip_address = null; // Non disponibile da API
+                        
+                        $DB->insert_record('teamsmeetings_sessions', $session_record);
+                    }
+                    
+                    // Aggiorna riepilogo presenze
+                    teamsmeetings_update_attendance_summary($meeting->id, $participant->userid);
+                    $synced_users++;
+                }
+            }
+            
+            mtrace("  - Synced {$synced_users} users");
+            $synced_meetings++;
+            
+            // Segna il meeting come sincronizzato (aggiungi campo last_sync se necessario)
+            $meeting->timemodified = time();
+            $DB->update_record('teamsmeetings', $meeting);
+            
+        } catch (Exception $e) {
+            mtrace("  - Error: " . $e->getMessage());
+            $errors++;
+        }
+        
+        // Pausa tra richieste per non sovraccaricare API
+        sleep(1);
+    }
+    
+    mtrace("Sync complete. Meetings: {$synced_meetings}, Errors: {$errors}");
     return true;
 }
