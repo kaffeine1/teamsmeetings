@@ -1,0 +1,16 @@
+<div class="teamsmeetings-mobile">
+    {{#intro}}
+    <div class="intro">{{{intro}}}</div>
+    {{/intro}}
+    <ul class="list-unstyled mt-2">
+        <li><strong>{{#str}}starttime, mod_teamsmeetings{{/str}}:</strong> {{starttime}}</li>
+        {{#endtime}}
+        <li><strong>{{#str}}endtime, mod_teamsmeetings{{/str}}:</strong> {{endtime}}</li>
+        {{/endtime}}
+    </ul>
+    {{#joinurl}}
+    <div class="text-center mt-3">
+        <a href="{{joinurl}}" class="btn btn-primary">{{#str}}joinmeeting, mod_teamsmeetings{{/str}}</a>
+    </div>
+    {{/joinurl}}
+</div>
