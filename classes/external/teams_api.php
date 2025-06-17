@@ -114,10 +114,13 @@ class teams_api {
      * @param stdClass $meeting_data
      * @return stdClass|false
      */
-    public function create_meeting($meeting_data) {
-        global $USER;
-        
-        $url = self::GRAPH_API_URL . '/me/onlineMeetings';
+    public function create_meeting($meeting_data, $organizerupn) {
+        $organizerupn = trim($organizerupn);
+        if (empty($organizerupn)) {
+            throw new \coding_exception('Organizer UPN cannot be empty');
+        }
+
+        $url = self::GRAPH_API_URL . '/users/' . rawurlencode($organizerupn) . '/onlineMeetings';
         
         // Convert Moodle times to ISO format
         $start_time = date('c', $meeting_data->start_time);
@@ -176,12 +179,17 @@ class teams_api {
      * @param stdClass $meeting_data
      * @return bool
      */
-    public function update_meeting($meeting_data) {
+    public function update_meeting($meeting_data, $organizerupn) {
+        $organizerupn = trim($organizerupn);
+        if (empty($organizerupn)) {
+            throw new \coding_exception('Organizer UPN cannot be empty');
+        }
+
         if (empty($meeting_data->meeting_id)) {
             return false;
         }
-        
-        $url = self::GRAPH_API_URL . '/me/onlineMeetings/' . $meeting_data->meeting_id;
+
+        $url = self::GRAPH_API_URL . '/users/' . rawurlencode($organizerupn) . '/onlineMeetings/' . $meeting_data->meeting_id;
         
         $update_data = array(
             'subject' => $meeting_data->name,
@@ -213,8 +221,13 @@ class teams_api {
      * @param string $meeting_id
      * @return bool
      */
-    public function delete_meeting($meeting_id) {
-        $url = self::GRAPH_API_URL . '/me/onlineMeetings/' . $meeting_id;
+    public function delete_meeting($meeting_id, $organizerupn) {
+        $organizerupn = trim($organizerupn);
+        if (empty($organizerupn)) {
+            throw new \coding_exception('Organizer UPN cannot be empty');
+        }
+
+        $url = self::GRAPH_API_URL . '/users/' . rawurlencode($organizerupn) . '/onlineMeetings/' . $meeting_id;
         
         $headers = array(
             'Authorization: Bearer ' . $this->access_token
@@ -241,9 +254,14 @@ class teams_api {
      * @param string $meeting_id
      * @return array|false
      */
-    public function get_attendance($meeting_id) {
+    public function get_attendance($meeting_id, $organizerupn) {
+        $organizerupn = trim($organizerupn);
+        if (empty($organizerupn)) {
+            throw new \coding_exception('Organizer UPN cannot be empty');
+        }
+
         // Usa endpoint Beta per attendance reports
-        $url = 'https://graph.microsoft.com/beta/me/onlineMeetings/' . $meeting_id . '/attendanceReports';
+        $url = 'https://graph.microsoft.com/beta/users/' . rawurlencode($organizerupn) . '/onlineMeetings/' . $meeting_id . '/attendanceReports';
         
         $headers = array(
             'Authorization: Bearer ' . $this->access_token,
@@ -268,7 +286,7 @@ class teams_api {
         
         if (isset($result->value) && !empty($result->value)) {
             $latest_report = end($result->value);
-            return $this->get_attendance_report_details($meeting_id, $latest_report->id);
+            return $this->get_attendance_report_details($meeting_id, $latest_report->id, $organizerupn);
         }
         
         return false;
@@ -281,8 +299,13 @@ class teams_api {
      * @param string $report_id
      * @return array|false
      */
-    private function get_attendance_report_details($meeting_id, $report_id) {
-        $url = self::GRAPH_API_URL . '/me/onlineMeetings/' . $meeting_id . 
+    private function get_attendance_report_details($meeting_id, $report_id, $organizerupn) {
+        $organizerupn = trim($organizerupn);
+        if (empty($organizerupn)) {
+            throw new \coding_exception('Organizer UPN cannot be empty');
+        }
+
+        $url = self::GRAPH_API_URL . '/users/' . rawurlencode($organizerupn) . '/onlineMeetings/' . $meeting_id .
                '/attendanceReports/' . $report_id . '/attendanceRecords';
         
         $headers = array(
@@ -458,8 +481,13 @@ class teams_api {
      * @param string $meeting_id
      * @return string|false
      */
-    public function get_join_url($meeting_id) {
-        $url = self::GRAPH_API_URL . '/me/onlineMeetings/' . $meeting_id;
+    public function get_join_url($meeting_id, $organizerupn) {
+        $organizerupn = trim($organizerupn);
+        if (empty($organizerupn)) {
+            throw new \coding_exception('Organizer UPN cannot be empty');
+        }
+
+        $url = self::GRAPH_API_URL . '/users/' . rawurlencode($organizerupn) . '/onlineMeetings/' . $meeting_id;
         
         $headers = array(
             'Authorization: Bearer ' . $this->access_token,

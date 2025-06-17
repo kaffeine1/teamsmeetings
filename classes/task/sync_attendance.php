@@ -89,7 +89,7 @@ class sync_attendance extends \core\task\scheduled_task {
             
             try {
                 // Get attendance data from Teams
-                $attendance_data = $teams_api->get_attendance($meeting->meeting_id);
+                $attendance_data = $teams_api->get_attendance($meeting->meeting_id, $meeting->organizer);
                 
                 if ($attendance_data === false) {
                     mtrace("  - No attendance data available yet");
