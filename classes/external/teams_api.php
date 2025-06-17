@@ -116,8 +116,10 @@ class teams_api {
      */
     public function create_meeting($meeting_data) {
         global $USER;
-        
-        $url = self::GRAPH_API_URL . '/me/onlineMeetings';
+
+        $organizer = $meeting_data->organizer ?? $USER->email;
+        $encoded = rawurlencode($organizer);
+        $url = self::GRAPH_API_URL . '/users/' . $encoded . '/onlineMeetings';
         
         // Convert Moodle times to ISO format
         $start_time = date('c', $meeting_data->start_time);
@@ -177,11 +179,12 @@ class teams_api {
      * @return bool
      */
     public function update_meeting($meeting_data) {
-        if (empty($meeting_data->meeting_id)) {
+        if (empty($meeting_data->meeting_id) || empty($meeting_data->organizer)) {
             return false;
         }
-        
-        $url = self::GRAPH_API_URL . '/me/onlineMeetings/' . $meeting_data->meeting_id;
+
+        $encoded = rawurlencode($meeting_data->organizer);
+        $url = self::GRAPH_API_URL . '/users/' . $encoded . '/onlineMeetings/' . $meeting_data->meeting_id;
         
         $update_data = array(
             'subject' => $meeting_data->name,
@@ -207,8 +210,12 @@ class teams_api {
      * @param string $meeting_id
      * @return bool
      */
-    public function delete_meeting($meeting_id) {
-        $url = self::GRAPH_API_URL . '/me/onlineMeetings/' . $meeting_id;
+    public function delete_meeting($meeting_id, $organizer) {
+        if (empty($organizer)) {
+            return false;
+        }
+        $encoded = rawurlencode($organizer);
+        $url = self::GRAPH_API_URL . '/users/' . $encoded . '/onlineMeetings/' . $meeting_id;
         
         $headers = array(
             'Authorization: Bearer ' . $this->access_token
@@ -229,9 +236,13 @@ class teams_api {
      * @param string $meeting_id
      * @return array|false
      */
-    public function get_attendance($meeting_id) {
+    public function get_attendance($meeting_id, $organizer) {
+        if (empty($organizer)) {
+            return false;
+        }
         // Usa endpoint Beta per attendance reports
-        $url = 'https://graph.microsoft.com/beta/me/onlineMeetings/' . $meeting_id . '/attendanceReports';
+        $encoded = rawurlencode($organizer);
+        $url = 'https://graph.microsoft.com/beta/users/' . $encoded . '/onlineMeetings/' . $meeting_id . '/attendanceReports';
         
         $headers = array(
             'Authorization: Bearer ' . $this->access_token,
@@ -258,7 +269,7 @@ class teams_api {
         
         if (isset($result->value) && !empty($result->value)) {
             $latest_report = end($result->value);
-            return $this->get_attendance_report_details($meeting_id, $latest_report->id);
+            return $this->get_attendance_report_details($meeting_id, $latest_report->id, $organizer);
         }
         
         return false;
@@ -271,8 +282,12 @@ class teams_api {
      * @param string $report_id
      * @return array|false
      */
-    private function get_attendance_report_details($meeting_id, $report_id) {
-        $url = self::GRAPH_API_URL . '/me/onlineMeetings/' . $meeting_id . 
+    private function get_attendance_report_details($meeting_id, $report_id, $organizer) {
+        if (empty($organizer)) {
+            return false;
+        }
+        $encoded = rawurlencode($organizer);
+        $url = self::GRAPH_API_URL . '/users/' . $encoded . '/onlineMeetings/' . $meeting_id .
                '/attendanceReports/' . $report_id . '/attendanceRecords';
         
         $headers = array(
@@ -444,8 +459,12 @@ class teams_api {
      * @param string $meeting_id
      * @return string|false
      */
-    public function get_join_url($meeting_id) {
-        $url = self::GRAPH_API_URL . '/me/onlineMeetings/' . $meeting_id;
+    public function get_join_url($meeting_id, $organizer) {
+        if (empty($organizer)) {
+            return false;
+        }
+        $encoded = rawurlencode($organizer);
+        $url = self::GRAPH_API_URL . '/users/' . $encoded . '/onlineMeetings/' . $meeting_id;
         
         $headers = array(
             'Authorization: Bearer ' . $this->access_token,

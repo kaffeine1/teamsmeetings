@@ -47,7 +47,7 @@ if (empty($teamsmeeting->meeting_id)) {
 $teamsapi = new mod_teamsmeetings\external\teams_api();
 
 try {
-    $attendances = $teamsapi->get_attendance($teamsmeeting->meeting_id);
+    $attendances = $teamsapi->get_attendance($teamsmeeting->meeting_id, $teamsmeeting->organizer);
     if ($attendances === false) {
         throw new moodle_exception('failedtosyncattendance', 'teamsmeetings');
     }

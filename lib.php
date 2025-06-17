@@ -32,12 +32,13 @@ defined('MOODLE_INTERNAL') || die();
  * @return int new instance id
  */
 function teamsmeetings_add_instance($data, $mform = null) {
-    global $DB;
+    global $DB, $USER;
     
     $data->timecreated = time();
     $data->timemodified = time();
     
-    // Create Teams meeting via API
+    // Set organizer UPN and create Teams meeting via API
+    $data->organizer = $USER->email;
     $teams_api = new \mod_teamsmeetings\external\teams_api();
     $meeting_info = $teams_api->create_meeting($data);
     
@@ -71,6 +72,10 @@ function teamsmeetings_update_instance($data, $mform = null) {
     $data->timemodified = time();
     $data->id = $data->instance;
     
+    // Preserve organizer
+    $existing = $DB->get_record('teamsmeetings', ['id' => $data->id], 'organizer');
+    $data->organizer = $existing->organizer;
+
     // Update Teams meeting via API if needed
     if (isset($data->update_teams_meeting) && $data->update_teams_meeting) {
         $teams_api = new \mod_teamsmeetings\external\teams_api();
@@ -96,7 +101,7 @@ function teamsmeetings_delete_instance($id) {
     // Delete Teams meeting via API
     if ($meeting->meeting_id) {
         $teams_api = new \mod_teamsmeetings\external\teams_api();
-        $teams_api->delete_meeting($meeting->meeting_id);
+        $teams_api->delete_meeting($meeting->meeting_id, $meeting->organizer);
     }
     
     // Delete attendance records
@@ -349,7 +354,7 @@ function teamsmeetings_cron() {
         mtrace("Processing meeting: {$meeting->name} (ID: {$meeting->id})");
         
         try {
-            $attendance_data = $teams_api->get_attendance($meeting->meeting_id);
+            $attendance_data = $teams_api->get_attendance($meeting->meeting_id, $meeting->organizer);
             
             if ($attendance_data === false) {
                 mtrace("  - No attendance data available");
