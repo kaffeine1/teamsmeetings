@@ -148,19 +148,44 @@ if (!$table->is_downloading()) {
         echo html_writer::tag('p', get_string('meetingduration', 'teamsmeetings') . ': ' . 
                              format_time($meetingduration));
     }
+    
+    // Show last sync time if available
+    if (!empty($teamsmeetings->last_sync)) {
+        $syncstatus = $teamsmeetings->sync_status ?? 'unknown';
+        $statusclass = $syncstatus == 'success' ? 'text-success' : ($syncstatus == 'error' ? 'text-danger' : 'text-warning');
+        echo html_writer::tag('p', 
+            get_string('lastsync', 'teamsmeetings') . ': ' . 
+            userdate($teamsmeetings->last_sync) . ' - ' .
+            html_writer::tag('span', $syncstatus, array('class' => $statusclass))
+        );
+    }
+    
     echo html_writer::end_tag('div');
     
-    // Sync button (to get latest data from Teams)
+    // Sync button and unmatched users button
     if (has_capability('mod/teamsmeetings:managemeeting', $context)) {
+        echo html_writer::start_tag('div', array('class' => 'mb-3'));
+        
+        // Sync button
         $syncurl = new moodle_url('/mod/teamsmeetings/sync.php', array(
             'id' => $cm->id,
             'sesskey' => sesskey()
         ));
-        echo html_writer::div(
-            html_writer::link($syncurl, get_string('syncattendance', 'teamsmeetings'), 
-                             array('class' => 'btn btn-primary')),
-            'mb-3'
-        );
+        echo html_writer::link($syncurl, get_string('syncattendance', 'teamsmeetings'), 
+                             array('class' => 'btn btn-primary mr-2'));
+        
+        // Check for unmatched users
+        $unmatched_count = $DB->count_records('teamsmeetings_unmatched_users', 
+                                              array('meetingid' => $teamsmeetings->id, 'mapped_userid' => 0));
+        
+        if ($unmatched_count > 0) {
+            $unmatchedurl = new moodle_url('/mod/teamsmeetings/unmatched_users.php', array('id' => $cm->id));
+            $label = get_string('unmatchedusers', 'teamsmeetings') . ' (' . $unmatched_count . ')';
+            echo html_writer::link($unmatchedurl, $label, 
+                                 array('class' => 'btn btn-warning'));
+        }
+        
+        echo html_writer::end_tag('div');
     }
 } else {
     // Remove actions column for download

@@ -13,6 +13,8 @@
         <FIELD NAME="start_time" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Meeting start time"/>
         <FIELD NAME="end_time" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Meeting end time"/>
         <FIELD NAME="recurring" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Is recurring meeting"/>
+        <FIELD NAME="last_sync" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Last attendance sync time"/>
+        <FIELD NAME="sync_status" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="Sync status: pending, success, error"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
@@ -22,6 +24,7 @@
       </KEYS>
       <INDEXES>
         <INDEX NAME="meeting_id" UNIQUE="true" FIELDS="meeting_id"/>
+        <INDEX NAME="last_sync" UNIQUE="false" FIELDS="last_sync"/>
       </INDEXES>
     </TABLE>
     
@@ -67,10 +70,9 @@
         <INDEX NAME="meeting_user_session" UNIQUE="false" FIELDS="meetingid, userid, sessionid"/>
       </INDEXES>
     </TABLE>
-  </TABLES>
-
-  <TABLE NAME="teamsmeetings_unmatched_users" COMMENT="Teams users that couldn't be matched to Moodle users">
-    <FIELDS>
+    
+    <TABLE NAME="teamsmeetings_unmatched_users" COMMENT="Teams users that couldn't be matched to Moodle users">
+      <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="meetingid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="teams_email" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
@@ -81,13 +83,14 @@
         <FIELD NAME="duration" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="mapped_userid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Manually mapped Moodle user"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-    </FIELDS>
-    <KEYS>
+      </FIELDS>
+      <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="meetingid" TYPE="foreign" FIELDS="meetingid" REFTABLE="teamsmeetings" REFFIELDS="id"/>
-    </KEYS>
-    <INDEXES>
+      </KEYS>
+      <INDEXES>
         <INDEX NAME="meeting_email" UNIQUE="false" FIELDS="meetingid, teams_email"/>
-    </INDEXES>
-</TABLE>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
 </XMLDB>

@@ -36,6 +36,8 @@ $string['teamsmeetings:view'] = 'Visualizzare Teams Meeting';
 $string['teamsmeetings:viewattendance'] = 'Visualizzare report presenze';
 $string['teamsmeetings:exportattendance'] = 'Esportare report presenze';
 $string['teamsmeetings:managemeeting'] = 'Gestire Teams Meeting';
+$string['teamsmeetings:syncattendance'] = 'Sincronizzare presenze da Teams';
+$string['teamsmeetings:deleteattendance'] = 'Eliminare registrazioni presenze';
 
 // Form campi
 $string['meetingname'] = 'Nome del meeting';
@@ -118,6 +120,7 @@ $string['attendancepercent'] = 'Presenza %';
 $string['viewdetails'] = 'Visualizza dettagli';
 $string['meetingduration'] = 'Durata meeting';
 $string['syncattendance'] = 'Sincronizza presenze';
+$string['lastsync'] = 'Ultima sincronizzazione';
 
 // Export
 $string['exportoptions'] = 'Opzioni di esportazione';
@@ -139,12 +142,8 @@ $string['eventmeetingcreated'] = 'Meeting Teams creato';
 $string['eventmeetingjoined'] = 'Partecipazione a meeting Teams';
 $string['eventattendanceviewed'] = 'Report presenze visualizzato';
 $string['eventattendancelogged'] = 'Presenza registrata';
-
-// Capabilities
-$string['teamsmeetings:addinstance'] = 'Aggiungere un nuovo Teams Meeting';
-$string['teamsmeetings:view'] = 'Visualizzare Teams Meeting';
-$string['teamsmeetings:viewattendance'] = 'Visualizzare report presenze';
-$string['teamsmeetings:exportattendance'] = 'Esportare report presenze';
+$string['eventattendancesynced'] = 'Presenze sincronizzate';
+$string['eventcoursemoduleviewed'] = 'Modulo Teams Meeting visualizzato';
 
 // Backup
 $string['attendancerecords'] = 'Registrazioni presenze';
@@ -152,6 +151,11 @@ $string['attendancerecords'] = 'Registrazioni presenze';
 // Errori
 $string['failedtogetaccesstoken'] = 'Impossibile ottenere il token di accesso da Microsoft';
 $string['missingparameter'] = 'Parametro mancante';
+$string['nomeetingid'] = 'ID meeting Teams non trovato';
+$string['failedtosyncattendance'] = 'Impossibile sincronizzare i dati delle presenze';
+$string['syncpartialcomplete'] = 'Sincronizzazione parziale: {$a->synced} utenti sincronizzati, {$a->errors} errori';
+$string['synccomplete'] = 'Sincronizzazione completata: {$a} utenti sincronizzati';
+$string['syncerror'] = 'Errore durante la sincronizzazione delle presenze';
 
 // Impostazioni avanzate
 $string['configintro'] = 'Configura l\'integrazione con Microsoft Teams per permettere la creazione di meeting e il tracciamento delle presenze.';
@@ -179,3 +183,21 @@ $string['debugmode'] = 'Modalità debug';
 $string['debugmode_desc'] = 'Attiva log dettagliati per troubleshooting';
 $string['cacheduration'] = 'Durata cache (secondi)';
 $string['cacheduration_desc'] = 'Quanto tempo mantenere in cache i token di accesso';
+
+// Task schedulati
+$string['syncattendancetask'] = 'Sincronizzazione presenze Teams Meeting';
+
+// Messaggi generali
+$string['nomeetings'] = 'Nessun Teams Meeting in questo corso';
+
+// Utenti non mappati
+$string['unmatchedusers'] = 'Utenti Teams non riconosciuti';
+$string['backtoattendance'] = 'Torna al report presenze';
+$string['nounmatchedusers'] = 'Tutti gli utenti Teams sono stati riconosciuti correttamente.';
+$string['unmatchedusers_help'] = 'Questi utenti hanno partecipato al meeting Teams ma non sono stati riconosciuti automaticamente. Puoi associarli manualmente agli utenti del corso.';
+$string['teamsemail'] = 'Email Teams';
+$string['teamsdisplayname'] = 'Nome visualizzato Teams';
+$string['maptouser'] = 'Associa a utente Moodle';
+$string['selectuser'] = 'Seleziona utente...';
+$string['map'] = 'Associa';
+$string['usermapped'] = 'Utente associato con successo e presenze aggiornate.';
