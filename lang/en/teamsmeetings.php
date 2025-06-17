@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Italian language strings for mod_teamsmeetings
+ * English language strings for mod_teamsmeetings
  *
  * @package    mod_teamsmeetings
  * @copyright  2024 Michele Dipace
@@ -26,178 +26,178 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['modulename'] = 'Teams Meeting';
 $string['modulenameplural'] = 'Teams Meetings';
-$string['modulename_help'] = 'Il modulo Teams Meeting permette ai docenti di creare e gestire meeting Microsoft Teams direttamente dai corsi Moodle, con tracciamento automatico delle presenze.';
+$string['modulename_help'] = 'The Teams Meeting module allows teachers to create and manage Microsoft Teams meetings directly from Moodle courses with automatic attendance tracking.';
 $string['pluginname'] = 'Teams Meeting';
-$string['pluginadministration'] = 'Amministrazione Teams Meeting';
+$string['pluginadministration'] = 'Teams Meeting administration';
 
-// Impostazioni
-$string['teamsmeetings:addinstance'] = 'Aggiungere un nuovo Teams Meeting';
-$string['teamsmeetings:view'] = 'Visualizzare Teams Meeting';
-$string['teamsmeetings:viewattendance'] = 'Visualizzare report presenze';
-$string['teamsmeetings:exportattendance'] = 'Esportare report presenze';
-$string['teamsmeetings:managemeeting'] = 'Gestire Teams Meeting';
-$string['teamsmeetings:syncattendance'] = 'Sincronizzare presenze da Teams';
-$string['teamsmeetings:deleteattendance'] = 'Eliminare registrazioni presenze';
+// Capabilities
+$string['teamsmeetings:addinstance'] = 'Add a new Teams Meeting';
+$string['teamsmeetings:view'] = 'View Teams Meetings';
+$string['teamsmeetings:viewattendance'] = 'View attendance reports';
+$string['teamsmeetings:exportattendance'] = 'Export attendance reports';
+$string['teamsmeetings:managemeeting'] = 'Manage Teams Meeting';
+$string['teamsmeetings:syncattendance'] = 'Sync attendance from Teams';
+$string['teamsmeetings:deleteattendance'] = 'Delete attendance records';
 
-// Form campi
-$string['meetingname'] = 'Nome del meeting';
-$string['meetingname_help'] = 'Nome che verrà visualizzato nel corso e in Microsoft Teams';
-$string['meetingsettings'] = 'Impostazioni meeting';
-$string['starttime'] = 'Ora di inizio';
-$string['starttime_help'] = 'Data e ora di inizio del meeting';
-$string['endtime'] = 'Ora di fine';
-$string['endtime_help'] = 'Data e ora di fine del meeting (opzionale)';
-$string['recurring'] = 'Meeting ricorrente';
-$string['recurring_help'] = 'Attiva se il meeting si ripete regolarmente';
-$string['recurrencepattern'] = 'Schema di ricorrenza';
-$string['recurrenceend'] = 'Fine ricorrenza';
-$string['daily'] = 'Giornaliero';
-$string['weekly'] = 'Settimanale';
-$string['monthly'] = 'Mensile';
+// Form fields
+$string['meetingname'] = 'Meeting name';
+$string['meetingname_help'] = 'Name shown in the course and in Microsoft Teams';
+$string['meetingsettings'] = 'Meeting settings';
+$string['starttime'] = 'Start time';
+$string['starttime_help'] = 'Date and time when the meeting starts';
+$string['endtime'] = 'End time';
+$string['endtime_help'] = 'Date and time when the meeting ends (optional)';
+$string['recurring'] = 'Recurring meeting';
+$string['recurring_help'] = 'Enable if the meeting repeats regularly';
+$string['recurrencepattern'] = 'Recurrence pattern';
+$string['recurrenceend'] = 'Recurrence end';
+$string['daily'] = 'Daily';
+$string['weekly'] = 'Weekly';
+$string['monthly'] = 'Monthly';
 
-// Teams opzioni
-$string['teamsoptions'] = 'Opzioni Microsoft Teams';
-$string['allowanonymous'] = 'Permetti accesso anonimo';
-$string['allowanonymous_help'] = 'Permette agli utenti di partecipare senza autenticazione';
-$string['autoadmitusers'] = 'Ammissione automatica utenti';
-$string['everyoneincompany'] = 'Tutti nell\'organizzazione';
-$string['everyone'] = 'Tutti';
-$string['everyoneincompanyexcludingguests'] = 'Tutti nell\'organizzazione esclusi gli ospiti';
-$string['organizeronly'] = 'Solo l\'organizzatore';
-$string['recordmeeting'] = 'Registra meeting';
-$string['recordmeeting_help'] = 'Registra automaticamente il meeting quando inizia';
+// Teams options
+$string['teamsoptions'] = 'Microsoft Teams options';
+$string['allowanonymous'] = 'Allow anonymous access';
+$string['allowanonymous_help'] = 'Allows users to join without authentication';
+$string['autoadmitusers'] = 'Automatically admit users';
+$string['everyoneincompany'] = 'Everyone in the organization';
+$string['everyone'] = 'Everyone';
+$string['everyoneincompanyexcludingguests'] = 'Everyone in the organization except guests';
+$string['organizeronly'] = 'Organizer only';
+$string['recordmeeting'] = 'Record meeting';
+$string['recordmeeting_help'] = 'Automatically record the meeting when it starts';
 
-// Tracciamento presenze
-$string['attendancetracking'] = 'Tracciamento presenze';
-$string['trackattendance'] = 'Traccia presenze';
-$string['trackattendance_help'] = 'Attiva il tracciamento automatico delle presenze';
-$string['minduration'] = 'Durata minima (minuti)';
-$string['minduration_help'] = 'Tempo minimo di presenza per essere considerati presenti';
+// Attendance tracking
+$string['attendancetracking'] = 'Attendance tracking';
+$string['trackattendance'] = 'Track attendance';
+$string['trackattendance_help'] = 'Enable automatic attendance tracking';
+$string['minduration'] = 'Minimum duration (minutes)';
+$string['minduration_help'] = 'Minimum presence time to be marked present';
 
-// Notifiche
-$string['notifications'] = 'Notifiche';
-$string['sendreminder'] = 'Invia promemoria';
-$string['remindertime'] = 'Tempo promemoria';
-$string['minutes15'] = '15 minuti prima';
-$string['minutes30'] = '30 minuti prima';
-$string['hour1'] = '1 ora prima';
-$string['day1'] = '1 giorno prima';
+// Notifications
+$string['notifications'] = 'Notifications';
+$string['sendreminder'] = 'Send reminder';
+$string['remindertime'] = 'Reminder time';
+$string['minutes15'] = '15 minutes before';
+$string['minutes30'] = '30 minutes before';
+$string['hour1'] = '1 hour before';
+$string['day1'] = '1 day before';
 
-// Errori validazione
-$string['endtimebeforestarttime'] = 'L\'ora di fine deve essere successiva all\'ora di inizio';
-$string['invalidminduration'] = 'La durata minima deve essere almeno 1 minuto';
+// Validation errors
+$string['endtimebeforestarttime'] = 'End time must be after start time';
+$string['invalidminduration'] = 'Minimum duration must be at least 1 minute';
 
-// Pagina visualizzazione
-$string['meetingdetails'] = 'Dettagli meeting';
-$string['status'] = 'Stato';
-$string['scheduled'] = 'Programmato';
-$string['inprogress'] = 'In corso';
-$string['ended'] = 'Terminato';
-$string['joinmeeting'] = 'Partecipa al meeting';
-$string['meetingnotstartedyet'] = 'Il meeting non è ancora iniziato';
-$string['meetinghasended'] = 'Il meeting è terminato';
-$string['nojoinurl'] = 'URL di partecipazione non disponibile';
+// View page
+$string['meetingdetails'] = 'Meeting details';
+$string['status'] = 'Status';
+$string['scheduled'] = 'Scheduled';
+$string['inprogress'] = 'In progress';
+$string['ended'] = 'Ended';
+$string['joinmeeting'] = 'Join meeting';
+$string['meetingnotstartedyet'] = 'The meeting has not started yet';
+$string['meetinghasended'] = 'The meeting has ended';
+$string['nojoinurl'] = 'Join URL not available';
 
-// Report presenze
-$string['attendancereport'] = 'Report presenze';
-$string['viewattendancereport'] = 'Visualizza report presenze';
-$string['participant'] = 'Partecipante';
-$string['firstjoin'] = 'Primo accesso';
-$string['lastleave'] = 'Ultima uscita';
-$string['totalduration'] = 'Durata totale';
-$string['sessions'] = 'Sessioni';
-$string['noattendancedata'] = 'Nessun dato di presenza disponibile';
-$string['attendancedetailsfor'] = 'Dettagli presenza per {$a}';
-$string['session'] = 'Sessione';
-$string['jointime'] = 'Ora di ingresso';
-$string['leavetime'] = 'Ora di uscita';
-$string['duration'] = 'Durata';
-$string['ipaddress'] = 'Indirizzo IP';
-$string['stillconnected'] = 'Ancora connesso';
-$string['total'] = 'Totale';
-$string['nosessions'] = 'Nessuna sessione trovata';
-$string['attendancepercent'] = 'Presenza %';
-$string['viewdetails'] = 'Visualizza dettagli';
-$string['meetingduration'] = 'Durata meeting';
-$string['syncattendance'] = 'Sincronizza presenze';
-$string['lastsync'] = 'Ultima sincronizzazione';
+// Attendance report
+$string['attendancereport'] = 'Attendance report';
+$string['viewattendancereport'] = 'View attendance report';
+$string['participant'] = 'Participant';
+$string['firstjoin'] = 'First join';
+$string['lastleave'] = 'Last leave';
+$string['totalduration'] = 'Total duration';
+$string['sessions'] = 'Sessions';
+$string['noattendancedata'] = 'No attendance data available';
+$string['attendancedetailsfor'] = 'Attendance details for {$a}';
+$string['session'] = 'Session';
+$string['jointime'] = 'Join time';
+$string['leavetime'] = 'Leave time';
+$string['duration'] = 'Duration';
+$string['ipaddress'] = 'IP address';
+$string['stillconnected'] = 'Still connected';
+$string['total'] = 'Total';
+$string['nosessions'] = 'No sessions found';
+$string['attendancepercent'] = 'Attendance %';
+$string['viewdetails'] = 'View details';
+$string['meetingduration'] = 'Meeting duration';
+$string['syncattendance'] = 'Sync attendance';
+$string['lastsync'] = 'Last synchronization';
 
 // Export
-$string['exportoptions'] = 'Opzioni di esportazione';
-$string['downloadcsv'] = 'Scarica CSV';
-$string['downloadexcel'] = 'Scarica Excel';
-$string['downloadpdf'] = 'Scarica PDF';
+$string['exportoptions'] = 'Export options';
+$string['downloadcsv'] = 'Download CSV';
+$string['downloadexcel'] = 'Download Excel';
+$string['downloadpdf'] = 'Download PDF';
 
-// Impostazioni plugin
-$string['settings'] = 'Impostazioni Teams Meeting';
+// Plugin settings
+$string['settings'] = 'Teams Meeting settings';
 $string['tenant_id'] = 'Tenant ID';
-$string['tenant_id_desc'] = 'Microsoft Azure Tenant ID della tua organizzazione';
+$string['tenant_id_desc'] = 'Microsoft Azure Tenant ID of your organization';
 $string['client_id'] = 'Client ID';
-$string['client_id_desc'] = 'Application (client) ID dall\'app registrata in Azure';
-$string['client_secret'] = 'Client Secret';
-$string['client_secret_desc'] = 'Client secret dall\'app registrata in Azure';
+$string['client_id_desc'] = 'Application (client) ID from the Azure registered app';
+$string['client_secret'] = 'Client secret';
+$string['client_secret_desc'] = 'Client secret from the Azure registered app';
 
-// Eventi
-$string['eventmeetingcreated'] = 'Meeting Teams creato';
-$string['eventmeetingjoined'] = 'Partecipazione a meeting Teams';
-$string['eventattendanceviewed'] = 'Report presenze visualizzato';
-$string['eventattendancelogged'] = 'Presenza registrata';
-$string['eventattendancesynced'] = 'Presenze sincronizzate';
-$string['eventcoursemoduleviewed'] = 'Modulo Teams Meeting visualizzato';
+// Events
+$string['eventmeetingcreated'] = 'Teams meeting created';
+$string['eventmeetingjoined'] = 'Teams meeting joined';
+$string['eventattendanceviewed'] = 'Attendance report viewed';
+$string['eventattendancelogged'] = 'Attendance logged';
+$string['eventattendancesynced'] = 'Attendance synchronized';
+$string['eventcoursemoduleviewed'] = 'Teams Meeting module viewed';
 
 // Backup
-$string['attendancerecords'] = 'Registrazioni presenze';
+$string['attendancerecords'] = 'Attendance records';
 
-// Errori
-$string['failedtogetaccesstoken'] = 'Impossibile ottenere il token di accesso da Microsoft';
-$string['missingparameter'] = 'Parametro mancante';
-$string['nomeetingid'] = 'ID meeting Teams non trovato';
-$string['failedtosyncattendance'] = 'Impossibile sincronizzare i dati delle presenze';
-$string['syncpartialcomplete'] = 'Sincronizzazione parziale: {$a->synced} utenti sincronizzati, {$a->errors} errori';
-$string['synccomplete'] = 'Sincronizzazione completata: {$a} utenti sincronizzati';
-$string['syncerror'] = 'Errore durante la sincronizzazione delle presenze';
+// Errors
+$string['failedtogetaccesstoken'] = 'Could not obtain the access token from Microsoft';
+$string['missingparameter'] = 'Missing parameter';
+$string['nomeetingid'] = 'Teams meeting ID not found';
+$string['failedtosyncattendance'] = 'Unable to synchronize attendance data';
+$string['syncpartialcomplete'] = 'Partial sync: {$a->synced} users synced, {$a->errors} errors';
+$string['synccomplete'] = 'Sync completed: {$a} users synced';
+$string['syncerror'] = 'Error while synchronizing attendance';
 
-// Impostazioni avanzate
-$string['configintro'] = 'Configura l\'integrazione con Microsoft Teams per permettere la creazione di meeting e il tracciamento delle presenze.';
-$string['azuresettings'] = 'Impostazioni Azure Active Directory';
-$string['azuresettings_desc'] = 'Configura le credenziali dell\'applicazione registrata in Azure AD per accedere alle API di Microsoft Graph.';
-$string['defaultmeetingsettings'] = 'Impostazioni predefinite meeting';
-$string['defaultmeetingsettings_desc'] = 'Valori predefiniti per i nuovi meeting Teams.';
-$string['defaultautoadmit'] = 'Ammissione automatica predefinita';
-$string['defaultautoadmit_desc'] = 'Chi può bypassare la sala d\'attesa per impostazione predefinita';
-$string['defaultrecording'] = 'Registrazione predefinita';
-$string['defaultrecording_desc'] = 'Attiva la registrazione automatica per impostazione predefinita';
-$string['defaultattendance'] = 'Tracciamento presenze predefinito';
-$string['defaultattendance_desc'] = 'Attiva il tracciamento presenze per impostazione predefinita';
-$string['defaultminduration'] = 'Durata minima predefinita';
-$string['defaultminduration_desc'] = 'Minuti minimi di presenza per essere considerati presenti (predefinito)';
-$string['cronsettings'] = 'Impostazioni sincronizzazione';
-$string['cronsettings_desc'] = 'Configura la frequenza di sincronizzazione dei dati di presenza da Teams.';
-$string['syncfrequency'] = 'Frequenza sincronizzazione';
-$string['syncfrequency_desc'] = 'Quanto spesso sincronizzare i dati di presenza da Microsoft Teams';
-$string['minutes5'] = '5 minuti';
-$string['minutes10'] = '10 minuti';
-$string['advancedsettings'] = 'Impostazioni avanzate';
-$string['advancedsettings_desc'] = 'Opzioni avanzate per debug e ottimizzazione.';
-$string['debugmode'] = 'Modalità debug';
-$string['debugmode_desc'] = 'Attiva log dettagliati per troubleshooting';
-$string['cacheduration'] = 'Durata cache (secondi)';
-$string['cacheduration_desc'] = 'Quanto tempo mantenere in cache i token di accesso';
+// Advanced settings
+$string['configintro'] = 'Configure the integration with Microsoft Teams to allow meeting creation and attendance tracking.';
+$string['azuresettings'] = 'Azure Active Directory settings';
+$string['azuresettings_desc'] = 'Configure the credentials of the app registered in Azure AD to access Microsoft Graph APIs.';
+$string['defaultmeetingsettings'] = 'Default meeting settings';
+$string['defaultmeetingsettings_desc'] = 'Default values for new Teams meetings.';
+$string['defaultautoadmit'] = 'Default automatic admission';
+$string['defaultautoadmit_desc'] = 'Who can bypass the lobby by default';
+$string['defaultrecording'] = 'Default recording';
+$string['defaultrecording_desc'] = 'Enable automatic recording by default';
+$string['defaultattendance'] = 'Default attendance tracking';
+$string['defaultattendance_desc'] = 'Enable attendance tracking by default';
+$string['defaultminduration'] = 'Default minimum duration';
+$string['defaultminduration_desc'] = 'Minimum minutes of presence required to be considered present (default)';
+$string['cronsettings'] = 'Synchronization settings';
+$string['cronsettings_desc'] = 'Configure how often to synchronize attendance data from Teams.';
+$string['syncfrequency'] = 'Sync frequency';
+$string['syncfrequency_desc'] = 'How often to sync attendance data from Microsoft Teams';
+$string['minutes5'] = '5 minutes';
+$string['minutes10'] = '10 minutes';
+$string['advancedsettings'] = 'Advanced settings';
+$string['advancedsettings_desc'] = 'Advanced options for debugging and optimisation.';
+$string['debugmode'] = 'Debug mode';
+$string['debugmode_desc'] = 'Enable detailed logs for troubleshooting';
+$string['cacheduration'] = 'Cache duration (seconds)';
+$string['cacheduration_desc'] = 'How long to keep access tokens in cache';
 
-// Task schedulati
-$string['syncattendancetask'] = 'Sincronizzazione presenze Teams Meeting';
+// Scheduled tasks
+$string['syncattendancetask'] = 'Teams Meeting attendance sync';
 
-// Messaggi generali
-$string['nomeetings'] = 'Nessun Teams Meeting in questo corso';
+// General messages
+$string['nomeetings'] = 'No Teams Meetings in this course';
 
-// Utenti non mappati
-$string['unmatchedusers'] = 'Utenti Teams non riconosciuti';
-$string['backtoattendance'] = 'Torna al report presenze';
-$string['nounmatchedusers'] = 'Tutti gli utenti Teams sono stati riconosciuti correttamente.';
-$string['unmatchedusers_help'] = 'Questi utenti hanno partecipato al meeting Teams ma non sono stati riconosciuti automaticamente. Puoi associarli manualmente agli utenti del corso.';
-$string['teamsemail'] = 'Email Teams';
-$string['teamsdisplayname'] = 'Nome visualizzato Teams';
-$string['maptouser'] = 'Associa a utente Moodle';
-$string['selectuser'] = 'Seleziona utente...';
-$string['map'] = 'Associa';
-$string['usermapped'] = 'Utente associato con successo e presenze aggiornate.';
+// Unmatched users
+$string['unmatchedusers'] = 'Unrecognised Teams users';
+$string['backtoattendance'] = 'Back to attendance report';
+$string['nounmatchedusers'] = 'All Teams users were recognised correctly.';
+$string['unmatchedusers_help'] = 'These users joined the Teams meeting but were not automatically recognised. You can manually map them to course users.';
+$string['teamsemail'] = 'Teams email';
+$string['teamsdisplayname'] = 'Teams display name';
+$string['maptouser'] = 'Map to Moodle user';
+$string['selectuser'] = 'Select user...';
+$string['map'] = 'Map';
+$string['usermapped'] = 'User successfully mapped and attendance updated.';
