@@ -105,7 +105,9 @@ echo $OUTPUT->box_start('generalbox meetinginfo');
 echo html_writer::tag('h3', get_string('meetingdetails', 'teamsmeetings'));
 
 $table = new html_table();
+$table->caption = get_string('meetingdetails', 'teamsmeetings');
 $table->attributes['class'] = 'generaltable meetingdetails';
+$table->attributes['role'] = 'table';
 
 // Start time
 $table->data[] = array(
@@ -193,6 +195,8 @@ if (has_capability('mod/teamsmeetings:viewattendance', $context)) {
     
     if ($attendees) {
         $table = new html_table();
+        $table->caption = get_string('attendancereport', 'teamsmeetings');
+        $table->attributes['role'] = 'table';
         $table->head = array(
             get_string('participant', 'teamsmeetings'),
             get_string('firstjoin', 'teamsmeetings'),
