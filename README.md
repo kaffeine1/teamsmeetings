@@ -205,4 +205,4 @@ Sviluppato da Michele Dipace (Miki)
 - Creazione meeting Teams
 - Tracciamento presenze
 - Report dettagliati
-- Export dati
+- Export dati in vari formati (CSV, Excel, PDF)
