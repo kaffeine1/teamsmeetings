@@ -126,13 +126,13 @@ if (isset($meetinginfo->endtime)) {
 // Meeting status
 $now = time();
 if ($now < $teamsmeetings->start_time) {
-    $status = html_writer::tag('span', get_string('scheduled', 'teamsmeetings'), 
+    $status = html_writer::tag('span', get_string('scheduled', 'teamsmeetings'),
                               array('class' => 'badge badge-info'));
 } else if ($teamsmeetings->end_time && $now > $teamsmeetings->end_time) {
-    $status = html_writer::tag('span', get_string('ended', 'teamsmeetings'), 
+    $status = html_writer::tag('span', get_string('ended', 'teamsmeetings'),
                               array('class' => 'badge badge-secondary'));
 } else {
-    $status = html_writer::tag('span', get_string('inprogress', 'teamsmeetings'), 
+    $status = html_writer::tag('span', get_string('inprogress', 'teamsmeetings'),
                               array('class' => 'badge badge-success'));
 }
 
@@ -140,6 +140,19 @@ $table->data[] = array(
     get_string('status', 'teamsmeetings'),
     $status
 );
+
+// Meeting link row.
+if ($teamsmeetings->join_url) {
+    $link = html_writer::link(
+        $teamsmeetings->join_url,
+        get_string('openinteams', 'teamsmeetings'),
+        array('target' => '_blank', 'rel' => 'noopener')
+    );
+    $table->data[] = array(
+        get_string('meetinglink', 'teamsmeetings'),
+        $link
+    );
+}
 
 // Recurring info
 if ($teamsmeetings->recurring) {
