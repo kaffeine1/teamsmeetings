@@ -232,8 +232,11 @@ if (has_capability('mod/teamsmeetings:viewattendance', $context)) {
 }
 
 // Show completion info
-$completiondetails = \core_completion\cm_completion_details::get_instance($cm, $USER->id);
-$activitydates = \core\activity_dates::get_dates_for_module($cm, $USER->id);
-echo $OUTPUT->activity_information($cm, $completiondetails, $activitydates);
+// Use $PAGE->cm here to ensure we have a cm_info object rather than a raw
+// course_module record. This avoids type errors when retrieving completion
+// details.
+$completiondetails = \core_completion\cm_completion_details::get_instance($PAGE->cm, $USER->id);
+$activitydates = \core\activity_dates::get_dates_for_module($PAGE->cm, $USER->id);
+echo $OUTPUT->activity_information($PAGE->cm, $completiondetails, $activitydates);
 
 echo $OUTPUT->footer();
