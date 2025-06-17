@@ -66,6 +66,8 @@ $string['everyoneincompanyexcludingguests'] = 'Everyone in the organization exce
 $string['organizeronly'] = 'Organizer only';
 $string['recordmeeting'] = 'Record meeting';
 $string['recordmeeting_help'] = 'Automatically record the meeting when it starts';
+$string['updatemeeting'] = 'Update Teams meeting';
+$string['updatemeeting_help'] = 'If enabled, changes here will also update the associated meeting in Microsoft Teams.';
 
 // Attendance tracking
 $string['attendancetracking'] = 'Attendance tracking';

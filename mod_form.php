@@ -108,6 +108,13 @@ class mod_teamsmeetings_mod_form extends moodleform_mod {
         $mform->addHelpButton('record_meeting', 'recordmeeting', 'teamsmeetings');
         $mform->setDefault('record_meeting', 0);
 
+        // Update Teams meeting when editing existing instance.
+        if ($this->_instance) {
+            $mform->addElement('selectyesno', 'update_teams_meeting', get_string('updatemeeting', 'teamsmeetings'));
+            $mform->addHelpButton('update_teams_meeting', 'updatemeeting', 'teamsmeetings');
+            $mform->setDefault('update_teams_meeting', 0);
+        }
+
         // Attendance tracking
         $mform->addElement('header', 'attendancetracking', get_string('attendancetracking', 'teamsmeetings'));
 
