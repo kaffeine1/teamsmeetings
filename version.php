@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_teamsmeetings';
-$plugin->version = 2025061602;  // YYYYMMDDXX format - Ho mantenuto la tua versione aggiornata
+$plugin->version = 2025061602;  // YYYYMMDDXX format
 $plugin->requires = 2022112800; // Moodle 4.1
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.0.1'; // Ho mantenuto la versione di release più alta
-$plugin->cron = 300; // Ho aggiunto la riga del cron dalla tua branch di sviluppo
+$plugin->release = '1.0.1';
+$plugin->cron = 300; // Run cron every 5 minutes to update attendance
