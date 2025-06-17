@@ -116,7 +116,6 @@ function teamsmeetings_delete_instance($id) {
     if ($meeting->meeting_id) {
         $teams_api = new \mod_teamsmeetings\external\teams_api();
         try {
-            // SOLUZIONE DEL CONFLITTO: Unisco il try/catch con la nuova chiamata API
             $teams_api->delete_meeting($meeting->meeting_id, $meeting->organizer);
         } catch (\Exception $e) {
             debugging('Teams API delete_meeting error: ' . $e->getMessage(), DEBUG_DEVELOPER);

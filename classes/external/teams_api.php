@@ -210,11 +210,12 @@ class teams_api {
     /**
      * Delete a Teams meeting
      * 
-     * @param string $meeting_id
+     * @param string $meeting_id Meeting identifier
+     * @param string $organizerupn Organizer UPN
      * @return bool
      */
-    public function delete_meeting($meeting_id) {
-        $url = self::GRAPH_API_URL . '/me/onlineMeetings/' . $meeting_id;
+    public function delete_meeting($meeting_id, string $organizerupn) {
+        $url = self::GRAPH_API_URL . '/users/' . rawurlencode($organizerupn) . '/onlineMeetings/' . $meeting_id;
         
         $headers = array(
             'Authorization: Bearer ' . $this->access_token
