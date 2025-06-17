@@ -49,9 +49,6 @@ $context = context_module::instance($cm->id);
 if ($action == 'join' && confirm_sesskey()) {
     require_capability('mod/teamsmeetings:view', $context);
     
-    // Log attendance - user joining
-    teamsmeetings_log_attendance($teamsmeetings->id, $USER->id, 'join');
-    
     // Trigger event
     $event = \mod_teamsmeetings\event\meeting_joined::create(array(
         'objectid' => $teamsmeetings->id,
