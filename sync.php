@@ -101,9 +101,10 @@ try {
     $teamsmeeting->sync_status = 'error';
     $DB->update_record('teamsmeetings', $teamsmeeting);
 
-    debugging('Teams API sync error: ' . $e->getMessage(), DEBUG_DEVELOPER);
-    add_to_log($course->id, 'teamsmeetings', 'error', '', $e->getMessage(), $cm->id);
+    $msg = teamsmeetings_extract_error_message($e);
+    debugging('Teams API sync error: ' . $msg, DEBUG_DEVELOPER);
+    add_to_log($course->id, 'teamsmeetings', 'error', '', $msg, $cm->id);
 
-    redirect($returnurl, get_string('syncerror', 'teamsmeetings'), 0,
+    redirect($returnurl, get_string('syncerrorwithmsg', 'teamsmeetings', $msg), 0,
         core\output\notification::NOTIFY_ERROR);
 }

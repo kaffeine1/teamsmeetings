@@ -156,6 +156,10 @@ $string['failedtosyncattendance'] = 'Impossibile sincronizzare i dati delle pres
 $string['syncpartialcomplete'] = 'Sincronizzazione parziale: {$a->synced} utenti sincronizzati, {$a->errors} errori';
 $string['synccomplete'] = 'Sincronizzazione completata: {$a} utenti sincronizzati';
 $string['syncerror'] = 'Errore durante la sincronizzazione delle presenze';
+$string['meetingcreationerror'] = 'Errore nella creazione del meeting: {$a}';
+$string['meetingupdateerror'] = 'Errore nell\'aggiornamento del meeting: {$a}';
+$string['meetingdeleteerror'] = 'Errore nell\'eliminazione del meeting: {$a}';
+$string['syncerrorwithmsg'] = 'Errore durante la sincronizzazione delle presenze: {$a}';
 
 // Impostazioni avanzate
 $string['configintro'] = 'Configura l\'integrazione con Microsoft Teams per permettere la creazione di meeting e il tracciamento delle presenze.';

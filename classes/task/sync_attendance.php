@@ -149,8 +149,9 @@ class sync_attendance extends \core\task\scheduled_task {
                 $event->trigger();
                 
             } catch (\Exception $e) {
-                mtrace("  - Error: " . $e->getMessage());
-                
+                $msg = \teamsmeetings_extract_error_message($e);
+                mtrace("  - Error: " . $msg);
+
                 // Update sync status
                 $meeting->last_sync = time();
                 $meeting->sync_status = 'error';
