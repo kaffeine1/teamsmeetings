@@ -184,6 +184,9 @@ $string['debugmode_desc'] = 'Enable detailed logs for troubleshooting';
 $string['cacheduration'] = 'Cache duration (seconds)';
 $string['cacheduration_desc'] = 'How long to keep access tokens in cache';
 
+// Beta endpoint warning
+$string['betaendpointwarning'] = 'Attendance relies on Microsoft Graph Beta APIs, which may change or stop working.';
+
 // Scheduled tasks
 $string['syncattendancetask'] = 'Teams Meeting attendance sync';
 
