@@ -1,5 +1,5 @@
 <?php
-function xmldb_mod_teamsmeetings_upgrade($oldversion) {
+function xmldb_teamsmeetings_upgrade($oldversion) {
     global $DB;
     $dbman = $DB->get_manager();
 
