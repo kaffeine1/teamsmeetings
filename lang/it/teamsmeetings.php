@@ -212,7 +212,12 @@ $string['teamsdisplayname'] = 'Nome visualizzato Teams';
 $string['maptouser'] = 'Associa a utente Moodle';
 $string['selectuser'] = 'Seleziona utente...';
 $string['map'] = 'Associa';
-$string['usermapped'] = 'Utente associato con successo e presenze aggiornate.';// Privacy API
+$string['usermapped'] = 'Utente associato con successo e presenze aggiornate.';
+$string['testconnection'] = 'Test connessione';
+$string['connectionsuccessful'] = 'Connessione riuscita';
+$string['connectionfailed'] = 'Connessione fallita: {$a}';
+
+// Privacy API
 $string['privacy:metadata:teamsmeetings_attendance'] = 'Registra il riepilogo presenze per ogni meeting.';
 $string['privacy:metadata:teamsmeetings_attendance:meetingid'] = 'ID dell\'istanza meeting.';
 $string['privacy:metadata:teamsmeetings_attendance:userid'] = 'ID dell\'utente.';

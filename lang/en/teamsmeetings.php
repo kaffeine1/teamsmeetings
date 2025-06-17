@@ -215,6 +215,10 @@ $string['maptouser'] = 'Map to Moodle user';
 $string['selectuser'] = 'Select user...';
 $string['map'] = 'Map';
 $string['usermapped'] = 'User successfully mapped and attendance updated.';
+$string['testconnection'] = 'Test connection';
+$string['connectionsuccessful'] = 'Connection successful';
+$string['connectionfailed'] = 'Connection failed: {$a}';
+
 // Privacy API
 $string['privacy:metadata:teamsmeetings_attendance'] = 'Stores attendance summary for each meeting.';
 $string['privacy:metadata:teamsmeetings_attendance:meetingid'] = 'Meeting instance ID.';

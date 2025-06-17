@@ -57,6 +57,15 @@ if ($ADMIN->fulltree) {
         get_string('client_secret_desc', 'teamsmeetings'),
         ''));
 
+    // Test connection button.
+    $button = html_writer::link(
+        new moodle_url('/mod/teamsmeetings/test_connection.php'),
+        get_string('testconnection', 'teamsmeetings'),
+        ['class' => 'btn btn-secondary']
+    );
+    $settings->add(new admin_setting_heading('teamsmeetings/testconnection',
+        get_string('testconnection', 'teamsmeetings'), $button));
+
     // Default meeting settings
     $settings->add(new admin_setting_heading('teamsmeetings/defaultsheading',
         get_string('defaultmeetingsettings', 'teamsmeetings'),

@@ -50,6 +50,12 @@ class teams_api {
     
     /** @var string Client secret */
     private $client_secret;
+
+    /** @var float Delay between consecutive API calls in seconds */
+    private $rate_limit_delay = 1.0;
+
+    /** @var float Timestamp of the last API call */
+    private $last_api_call = 0.0;
     
     /**
      * Constructor
@@ -89,6 +95,7 @@ class teams_api {
         );
         
         $curl = new \curl();
+        $this->rate_limit_check();
         $response = $curl->post($token_url, $params);
         $data = json_decode($response);
         
@@ -105,6 +112,21 @@ class teams_api {
         }
         
         throw new \moodle_exception('failedtogetaccesstoken', 'mod_teamsmeetings', '', null, $response);
+    }
+
+    /**
+     * Rate limit API calls to avoid hitting service limits
+     */
+    private function rate_limit_check() {
+        $now = microtime(true);
+        if ($this->last_api_call > 0) {
+            $elapsed = $now - $this->last_api_call;
+            if ($elapsed < $this->rate_limit_delay) {
+                $sleep = ($this->rate_limit_delay - $elapsed) * 1000000;
+                usleep((int)$sleep);
+            }
+        }
+        $this->last_api_call = microtime(true);
     }
     
     /**
@@ -160,6 +182,7 @@ class teams_api {
         
         $curl = new \curl();
         $curl->setHeader($headers);
+        $this->rate_limit_check();
         $response = $curl->post($url, json_encode($meeting));
         
         $result = json_decode($response);
@@ -203,6 +226,7 @@ class teams_api {
         
         $curl = new \curl();
         $curl->setHeader($headers);
+        $this->rate_limit_check();
         $response = $curl->patch($url, json_encode($update_data));
 
         $result = json_decode($response);
@@ -235,6 +259,7 @@ class teams_api {
         
         $curl = new \curl();
         $curl->setHeader($headers);
+        $this->rate_limit_check();
         $response = $curl->delete($url);
 
         $result = json_decode($response);
@@ -270,6 +295,7 @@ class teams_api {
         
         $curl = new \curl();
         $curl->setHeader($headers);
+        $this->rate_limit_check();
         $response = $curl->get($url);
         
         $result = json_decode($response);
@@ -315,6 +341,7 @@ class teams_api {
         
         $curl = new \curl();
         $curl->setHeader($headers);
+        $this->rate_limit_check();
         $response = $curl->get($url);
         
         $result = json_decode($response);
@@ -493,6 +520,7 @@ class teams_api {
         
         $curl = new \curl();
         $curl->setHeader($headers);
+        $this->rate_limit_check();
         $response = $curl->get($url);
         
         $result = json_decode($response);
