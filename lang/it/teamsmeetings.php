@@ -188,6 +188,11 @@ $string['debugmode_desc'] = 'Attiva log dettagliati per troubleshooting';
 $string['cacheduration'] = 'Durata cache (secondi)';
 $string['cacheduration_desc'] = 'Quanto tempo mantenere in cache i token di accesso';
 
+// Campo UPN organizzatore
+$string['upnfield'] = 'Campo UPN organizzatore';
+$string['upnfield_desc'] = 'Seleziona quale campo utente utilizzare come UPN dell\'organizzatore (email, username o campo profilo personalizzato).';
+$string['invalidupn'] = 'L\'UPN dell\'organizzatore non è un indirizzo email valido';
+
 // Avviso endpoint Beta
 $string['betaendpointwarning'] = 'La rilevazione presenze si basa sulle API Beta di Microsoft Graph che potrebbero cambiare o smettere di funzionare.';
 

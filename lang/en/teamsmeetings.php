@@ -190,6 +190,11 @@ $string['debugmode_desc'] = 'Enable detailed logs for troubleshooting';
 $string['cacheduration'] = 'Cache duration (seconds)';
 $string['cacheduration_desc'] = 'How long to keep access tokens in cache';
 
+// Organizer UPN field
+$string['upnfield'] = 'Organizer UPN field';
+$string['upnfield_desc'] = 'Select which user field should be used as the organizer UPN when creating Teams meetings.';
+$string['invalidupn'] = 'The organizer UPN is not a valid email address';
+
 // Beta endpoint warning
 $string['betaendpointwarning'] = 'Attendance relies on Microsoft Graph Beta APIs, which may change or stop working.';
 

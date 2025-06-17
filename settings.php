@@ -123,6 +123,22 @@ if ($ADMIN->fulltree) {
         get_string('advancedsettings', 'teamsmeetings'),
         get_string('advancedsettings_desc', 'teamsmeetings')));
 
+    // Organizer UPN field
+    $upnoptions = array(
+        'email' => get_string('email'),
+        'username' => get_string('username')
+    );
+    if ($fields = $DB->get_records('user_info_field', null, 'name', 'shortname, name')) {
+        foreach ($fields as $field) {
+            $upnoptions['profile_field_' . $field->shortname] = $field->name;
+        }
+    }
+    $settings->add(new admin_setting_configselect('mod_teamsmeetings/upn_field',
+        get_string('upnfield', 'teamsmeetings'),
+        get_string('upnfield_desc', 'teamsmeetings'),
+        'email',
+        $upnoptions));
+
     // Debug mode
     $settings->add(new admin_setting_configcheckbox('mod_teamsmeetings/debug_mode',
         get_string('debugmode', 'teamsmeetings'),
