@@ -105,7 +105,7 @@ class teams_api {
             return $this->access_token;
         }
         
-        throw new \moodle_exception('failedtogetaccesstoken', 'mod_teamsmeetings');
+        throw new \moodle_exception('failedtogetaccesstoken', 'mod_teamsmeetings', '', null, $response);
     }
     
     /**
@@ -167,9 +167,9 @@ class teams_api {
         if (isset($result->id)) {
             return $result;
         }
-        
-        debugging('Failed to create Teams meeting: ' . $response, DEBUG_DEVELOPER);
-        return false;
+
+        $message = isset($result->error->message) ? $result->error->message : $response;
+        throw new \Exception('Failed to create Teams meeting: ' . $message);
     }
     
     /**
@@ -200,8 +200,14 @@ class teams_api {
         $curl = new \curl();
         $curl->setHeader($headers);
         $response = $curl->patch($url, json_encode($update_data));
-        
-        return $response !== false;
+
+        $result = json_decode($response);
+        if ($response === false || isset($result->error)) {
+            $message = isset($result->error->message) ? $result->error->message : $response;
+            throw new \Exception('Failed to update Teams meeting: ' . $message);
+        }
+
+        return true;
     }
     
     /**
@@ -224,8 +230,14 @@ class teams_api {
         $curl = new \curl();
         $curl->setHeader($headers);
         $response = $curl->delete($url);
-        
-        return $response !== false;
+
+        $result = json_decode($response);
+        if ($response === false || isset($result->error)) {
+            $message = isset($result->error->message) ? $result->error->message : $response;
+            throw new \Exception('Failed to delete Teams meeting: ' . $message);
+        }
+
+        return true;
     }
     
     /**
@@ -258,13 +270,11 @@ class teams_api {
         // Gestione errore specifico per permessi insufficienti
         if (isset($result->error)) {
             if ($result->error->code === 'Forbidden' || $result->error->code === 'Unauthorized') {
-                debugging('Permessi insufficienti per accedere ai report presenze. ' .
-                        'Verificare che l\'app abbia il permesso OnlineMeetingArtifact.Read.All', 
-                        DEBUG_DEVELOPER);
-                return false;
+                $message = 'Permessi insufficienti per accedere ai report presenze. ' .
+                        'Verificare che l\'app abbia il permesso OnlineMeetingArtifact.Read.All';
+                throw new \Exception($message);
             }
-            debugging('Errore API Teams: ' . $result->error->message, DEBUG_DEVELOPER);
-            return false;
+            throw new \Exception('Errore API Teams: ' . $result->error->message);
         }
         
         if (isset($result->value) && !empty($result->value)) {
@@ -300,12 +310,16 @@ class teams_api {
         $response = $curl->get($url);
         
         $result = json_decode($response);
-        
+
         if (isset($result->value)) {
-            return $this->process_attendance_records($result->value);
+            return $this->process_attendance_records($result->value, $meeting_id);
         }
-        
-        return false;
+
+        if (isset($result->error)) {
+            throw new \Exception('Errore API Teams: ' . $result->error->message);
+        }
+
+        throw new \Exception('Unexpected response when retrieving attendance details: ' . $response);
     }
     
     /**

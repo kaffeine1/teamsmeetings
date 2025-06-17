@@ -113,6 +113,11 @@ if ($ADMIN->fulltree) {
         300,
         $syncoptions));
 
+    // Beta endpoint notice.
+    $settings->add(new admin_setting_heading('teamsmeetings/betaendpointnotice',
+        '',
+        get_string('betaendpointwarning', 'teamsmeetings')));
+
     // Advanced settings
     $settings->add(new admin_setting_heading('teamsmeetings/advancedheading',
         get_string('advancedsettings', 'teamsmeetings'),
