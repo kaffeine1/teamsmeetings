@@ -83,17 +83,15 @@ function teamsmeetings_update_instance($data, $mform = null) {
     $existing = $DB->get_record('teamsmeetings', ['id' => $data->id], 'organizer');
     $data->organizer = $existing->organizer;
 
-    // Update Teams meeting via API if needed
-    if (isset($data->update_teams_meeting) && $data->update_teams_meeting) {
-        $teams_api = new \mod_teamsmeetings\external\teams_api();
-        try {
-            $teams_api->update_meeting($data, $data->organizer);
-        } catch (\Exception $e) {
-            $msg = teamsmeetings_extract_error_message($e);
-            debugging('Teams API update_meeting error: ' . $msg, DEBUG_DEVELOPER);
-            \core\notification::add(get_string('meetingupdateerror', 'teamsmeetings', $msg),
-                \core\output\notification::NOTIFY_ERROR);
-        }
+    // Update Teams meeting via API.
+    $teams_api = new \mod_teamsmeetings\external\teams_api();
+    try {
+        $teams_api->update_meeting($data, $data->organizer);
+    } catch (\Exception $e) {
+        $msg = teamsmeetings_extract_error_message($e);
+        debugging('Teams API update_meeting error: ' . $msg, DEBUG_DEVELOPER);
+        \core\notification::add(get_string('meetingupdateerror', 'teamsmeetings', $msg),
+            \core\output\notification::NOTIFY_ERROR);
     }
     
     return $DB->update_record('teamsmeetings', $data);
