@@ -64,8 +64,7 @@ class teams_api {
     
     /**
      * Get access token from Microsoft
-     * 
-     * @return string
+     * * @return string
      */
     private function get_access_token() {
         global $DB;
@@ -110,8 +109,8 @@ class teams_api {
     
     /**
      * Create a Teams meeting
-     * 
-     * @param stdClass $meeting_data
+     * * @param stdClass $meeting_data
+     * @param string $organizerupn
      * @return stdClass|false
      */
     public function create_meeting($meeting_data, $organizerupn) {
@@ -175,8 +174,8 @@ class teams_api {
     
     /**
      * Update a Teams meeting
-     * 
-     * @param stdClass $meeting_data
+     * * @param stdClass $meeting_data
+     * @param string $organizerupn
      * @return bool
      */
     public function update_meeting($meeting_data, $organizerupn) {
@@ -217,8 +216,8 @@ class teams_api {
     
     /**
      * Delete a Teams meeting
-     * 
-     * @param string $meeting_id
+     * * @param string $meeting_id
+     * @param string $organizerupn
      * @return bool
      */
     public function delete_meeting($meeting_id, $organizerupn) {
@@ -250,8 +249,8 @@ class teams_api {
      * Get attendance report for a meeting
      * NOTA: Richiede OnlineMeetingArtifact.Read.All permission
      * e potrebbe richiedere l'uso dell'endpoint Beta
-     * 
-     * @param string $meeting_id
+     * * @param string $meeting_id
+     * @param string $organizerupn
      * @return array|false
      */
     public function get_attendance($meeting_id, $organizerupn) {
@@ -294,9 +293,9 @@ class teams_api {
     
     /**
      * Get detailed attendance report
-     * 
-     * @param string $meeting_id
+     * * @param string $meeting_id
      * @param string $report_id
+     * @param string $organizerupn
      * @return array|false
      */
     private function get_attendance_report_details($meeting_id, $report_id, $organizerupn) {
@@ -305,7 +304,7 @@ class teams_api {
             throw new \coding_exception('Organizer UPN cannot be empty');
         }
 
-        $url = self::GRAPH_API_URL . '/users/' . rawurlencode($organizerupn) . '/onlineMeetings/' . $meeting_id .
+        $url = self::GRAPH_API_URL . '/users/' . rawurlencode($organizerupn) . '/onlineMeetings/' . $meeting_id . 
                '/attendanceReports/' . $report_id . '/attendanceRecords';
         
         $headers = array(
@@ -332,8 +331,8 @@ class teams_api {
     
     /**
      * Process attendance records from Teams API
-     * 
-     * @param array $records
+     * * @param array $records
+     * @param int $meetingid
      * @return array
      */
     private function process_attendance_records($records, $meetingid) {
@@ -414,8 +413,7 @@ class teams_api {
     
     /**
      * Match Teams user with Moodle user
-     * 
-     * @param stdClass $teams_user
+     * * @param stdClass $teams_user
      * @return stdClass|false
      */
     private function match_teams_user($teams_user) {
@@ -436,8 +434,7 @@ class teams_api {
     
     /**
      * Build recurrence pattern for meeting
-     * 
-     * @param stdClass $meeting_data
+     * * @param stdClass $meeting_data
      * @return array
      */
     private function build_recurrence_pattern($meeting_data) {
@@ -463,8 +460,7 @@ class teams_api {
     
     /**
      * Parse duration from seconds to human readable
-     * 
-     * @param int $seconds
+     * * @param int $seconds
      * @return string
      */
     private function parse_duration($seconds) {
@@ -477,8 +473,8 @@ class teams_api {
     
     /**
      * Get meeting join URL
-     * 
-     * @param string $meeting_id
+     * * @param string $meeting_id
+     * @param string $organizerupn
      * @return string|false
      */
     public function get_join_url($meeting_id, $organizerupn) {
