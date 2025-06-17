@@ -99,6 +99,8 @@ $string['joinmeeting'] = 'Join meeting';
 $string['meetingnotstartedyet'] = 'The meeting has not started yet';
 $string['meetinghasended'] = 'The meeting has ended';
 $string['nojoinurl'] = 'Join URL not available';
+$string['meetinglink'] = 'Meeting link';
+$string['openinteams'] = 'Open in Microsoft Teams';
 
 // Attendance report
 $string['attendancereport'] = 'Attendance report';
