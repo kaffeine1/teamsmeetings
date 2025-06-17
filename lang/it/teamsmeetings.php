@@ -184,6 +184,9 @@ $string['debugmode_desc'] = 'Attiva log dettagliati per troubleshooting';
 $string['cacheduration'] = 'Durata cache (secondi)';
 $string['cacheduration_desc'] = 'Quanto tempo mantenere in cache i token di accesso';
 
+// Avviso endpoint Beta
+$string['betaendpointwarning'] = 'La rilevazione presenze si basa sulle API Beta di Microsoft Graph che potrebbero cambiare o smettere di funzionare.';
+
 // Task schedulati
 $string['syncattendancetask'] = 'Sincronizzazione presenze Teams Meeting';
 
