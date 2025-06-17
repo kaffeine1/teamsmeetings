@@ -94,6 +94,8 @@ foreach ($enrolled as $user) {
 }
 
 $table = new html_table();
+$table->attributes['role'] = 'table';
+$table->caption = get_string('unmatchedusers', 'teamsmeetings');
 $table->head = [
     get_string('teamsemail', 'teamsmeetings'),
     get_string('teamsdisplayname', 'teamsmeetings'),

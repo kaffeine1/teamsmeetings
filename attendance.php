@@ -70,6 +70,8 @@ if ($userid) {
     
     if ($sessions) {
         $table = new html_table();
+        $table->caption = get_string('attendancedetailsfor', 'teamsmeetings', fullname($user));
+        $table->attributes['role'] = 'table';
         $table->head = array(
             get_string('session', 'teamsmeetings'),
             get_string('jointime', 'teamsmeetings'),
@@ -211,6 +213,8 @@ $table->column_class('attendance', 'attendance text-center');
 $table->set_attribute('cellspacing', '0');
 $table->set_attribute('id', 'attendancereport');
 $table->set_attribute('class', 'generaltable generalbox');
+$table->set_attribute('role', 'table');
+$table->caption = get_string('attendancereport', 'teamsmeetings');
 
 $table->show_download_buttons_at(array(TABLE_P_BOTTOM));
 $table->is_downloadable(true);
@@ -302,7 +306,11 @@ $table->finish_output();
 
 if (!$table->is_downloading()) {
     // Export options
-    echo html_writer::start_tag('div', array('class' => 'exportoptions mt-3'));
+    echo html_writer::start_tag('div', array(
+        'class' => 'exportoptions mt-3',
+        'role' => 'region',
+        'aria-label' => get_string('exportoptions', 'teamsmeetings')
+    ));
     echo html_writer::tag('h4', get_string('exportoptions', 'teamsmeetings'));
     
     $exporturl = new moodle_url($PAGE->url);

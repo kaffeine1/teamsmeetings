@@ -53,6 +53,8 @@ $sections = $modinfo->get_section_info_all();
 
 $table = new html_table();
 $table->attributes['class'] = 'generaltable mod_index';
+$table->attributes['role'] = 'table';
+$table->caption = get_string('modulenameplural', 'teamsmeetings');
 $table->head = [];
 $table->align = [];
 if ($usesections) {
