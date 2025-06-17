@@ -216,16 +216,17 @@ class teams_api {
     
     /**
      * Delete a Teams meeting
-     * * @param string $meeting_id
-     * @param string $organizerupn
+     *
+     * @param string $meeting_id Meeting identifier
+     * @param string $organizerupn Organizer UPN
      * @return bool
      */
-    public function delete_meeting($meeting_id, $organizerupn) {
+    public function delete_meeting($meeting_id, string $organizerupn) {
         $organizerupn = trim($organizerupn);
         if (empty($organizerupn)) {
             throw new \coding_exception('Organizer UPN cannot be empty');
         }
-
+        
         $url = self::GRAPH_API_URL . '/users/' . rawurlencode($organizerupn) . '/onlineMeetings/' . $meeting_id;
         
         $headers = array(
