@@ -34,15 +34,5 @@ $tasks = array(
         'month' => '*',
         'dayofweek' => '*',
         'disabled' => 0
-    ),
-    array(
-        'classname' => 'mod_teamsmeetings\task\send_reminders',
-        'blocking' => 0,
-        'minute' => '*/15',
-        'hour' => '*',
-        'day' => '*',
-        'month' => '*',
-        'dayofweek' => '*',
-        'disabled' => 0
     )
 );
