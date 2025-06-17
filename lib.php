@@ -37,11 +37,25 @@ function teamsmeetings_add_instance($data, $mform = null) {
     $data->timecreated = time();
     $data->timemodified = time();
     
-    // Set organizer UPN and create Teams meeting via API
-    $data->organizer = $USER->email;
+    // Determine organizer UPN based on plugin setting.
+    $upnfield = get_config('mod_teamsmeetings', 'upn_field');
+    if ($upnfield === 'username') {
+        $data->organizer = $USER->username;
+    } else if (strpos($upnfield, 'profile_field_') === 0) {
+        $pf = substr($upnfield, strlen('profile_field_'));
+        $data->organizer = $USER->profile[$pf] ?? '';
+    } else {
+        $data->organizer = $USER->email;
+    }
+    $data->organizer = trim($data->organizer);
+    if (!filter_var($data->organizer, FILTER_VALIDATE_EMAIL)) {
+        throw new moodle_exception('invalidupn', 'mod_teamsmeetings');
+    }
+
+    // Create Teams meeting via API
     $teams_api = new \mod_teamsmeetings\external\teams_api();
     try {
-        $meeting_info = $teams_api->create_meeting($data, $USER->email);
+        $meeting_info = $teams_api->create_meeting($data, $data->organizer);
 
         if ($meeting_info) {
             $data->meeting_id = $meeting_info->id;
