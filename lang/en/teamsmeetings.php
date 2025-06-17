@@ -156,6 +156,10 @@ $string['failedtosyncattendance'] = 'Unable to synchronize attendance data';
 $string['syncpartialcomplete'] = 'Partial sync: {$a->synced} users synced, {$a->errors} errors';
 $string['synccomplete'] = 'Sync completed: {$a} users synced';
 $string['syncerror'] = 'Error while synchronizing attendance';
+$string['meetingcreationerror'] = 'Failed to create meeting: {$a}';
+$string['meetingupdateerror'] = 'Failed to update meeting: {$a}';
+$string['meetingdeleteerror'] = 'Failed to delete meeting: {$a}';
+$string['syncerrorwithmsg'] = 'Error while synchronizing attendance: {$a}';
 
 // Advanced settings
 $string['configintro'] = 'Configure the integration with Microsoft Teams to allow meeting creation and attendance tracking.';

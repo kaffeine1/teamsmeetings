@@ -48,10 +48,13 @@ function teamsmeetings_add_instance($data, $mform = null) {
             $data->join_url = $meeting_info->joinUrl;
         }
     } catch (\Exception $e) {
-        debugging('Teams API create_meeting error: ' . $e->getMessage(), DEBUG_DEVELOPER);
+        $msg = teamsmeetings_extract_error_message($e);
+        debugging('Teams API create_meeting error: ' . $msg, DEBUG_DEVELOPER);
         if (!empty($data->course)) {
-            add_to_log($data->course, 'teamsmeetings', 'error', '', $e->getMessage());
+            add_to_log($data->course, 'teamsmeetings', 'error', '', $msg);
         }
+        \core\notification::add(get_string('meetingcreationerror', 'teamsmeetings', $msg),
+            \core\output\notification::NOTIFY_ERROR);
     }
     
     $data->id = $DB->insert_record('teamsmeetings', $data);
@@ -89,10 +92,13 @@ function teamsmeetings_update_instance($data, $mform = null) {
         try {
             $teams_api->update_meeting($data, $data->organizer);
         } catch (\Exception $e) {
-            debugging('Teams API update_meeting error: ' . $e->getMessage(), DEBUG_DEVELOPER);
+            $msg = teamsmeetings_extract_error_message($e);
+            debugging('Teams API update_meeting error: ' . $msg, DEBUG_DEVELOPER);
             if (!empty($data->course)) {
-                add_to_log($data->course, 'teamsmeetings', 'error', '', $e->getMessage());
+                add_to_log($data->course, 'teamsmeetings', 'error', '', $msg);
             }
+            \core\notification::add(get_string('meetingupdateerror', 'teamsmeetings', $msg),
+                \core\output\notification::NOTIFY_ERROR);
         }
     }
     
@@ -118,8 +124,11 @@ function teamsmeetings_delete_instance($id) {
         try {
             $teams_api->delete_meeting($meeting->meeting_id, $meeting->organizer);
         } catch (\Exception $e) {
-            debugging('Teams API delete_meeting error: ' . $e->getMessage(), DEBUG_DEVELOPER);
-            add_to_log($meeting->course, 'teamsmeetings', 'error', '', $e->getMessage());
+            $msg = teamsmeetings_extract_error_message($e);
+            debugging('Teams API delete_meeting error: ' . $msg, DEBUG_DEVELOPER);
+            add_to_log($meeting->course, 'teamsmeetings', 'error', '', $msg);
+            \core\notification::add(get_string('meetingdeleteerror', 'teamsmeetings', $msg),
+                \core\output\notification::NOTIFY_ERROR);
         }
     }
     
@@ -325,8 +334,36 @@ function teamsmeetings_get_attendance_report($meetingid) {
  */
 function teamsmeetings_get_user_sessions($meetingid, $userid) {
     global $DB;
-    
-    return $DB->get_records('teamsmeetings_sessions', 
-        array('meetingid' => $meetingid, 'userid' => $userid), 
+
+    return $DB->get_records('teamsmeetings_sessions',
+        array('meetingid' => $meetingid, 'userid' => $userid),
         'join_time ASC');
+}
+
+/**
+ * Extract an error message from a Teams API exception.
+ *
+ * @param \Exception $e
+ * @return string
+ */
+function teamsmeetings_extract_error_message(\Exception $e) {
+    $candidates = [$e->getMessage()];
+    if (property_exists($e, 'debuginfo') && !empty($e->debuginfo)) {
+        $candidates[] = $e->debuginfo;
+    }
+
+    foreach ($candidates as $candidate) {
+        $decoded = json_decode($candidate);
+        if ($decoded && isset($decoded->error->message)) {
+            return $decoded->error->message;
+        }
+        if (preg_match('/\{.*\}/', $candidate, $matches)) {
+            $decoded = json_decode($matches[0]);
+            if ($decoded && isset($decoded->error->message)) {
+                return $decoded->error->message;
+            }
+        }
+    }
+
+    return $e->getMessage();
 }
