@@ -18,7 +18,7 @@
  * Mobile services definition for mod_teamsmeetings
  *
  * @package    mod_teamsmeetings
- * @copyright  2024 Michele Dipace
+ * @copyright  2025 Michele Dipace
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
