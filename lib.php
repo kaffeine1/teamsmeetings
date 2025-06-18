@@ -52,6 +52,12 @@ function teamsmeetings_add_instance($data, $mform = null) {
         throw new moodle_exception('invalidupn', 'mod_teamsmeetings');
     }
 
+    // Debug resolved organizer.
+    debugging('Resolved organizer UPN: ' . $data->organizer, DEBUG_DEVELOPER);
+
+    // Debug data that will be sent to the Teams API.
+    debugging('Teams API payload: ' . json_encode($data), DEBUG_DEVELOPER);
+
     // Create Teams meeting via API
     $teams_api = new \mod_teamsmeetings\external\teams_api();
     try {
@@ -67,8 +73,11 @@ function teamsmeetings_add_instance($data, $mform = null) {
         \core\notification::add(get_string('meetingcreationerror', 'teamsmeetings', $msg),
             \core\output\notification::NOTIFY_ERROR);
     }
-    
+
     $data->id = $DB->insert_record('teamsmeetings', $data);
+
+    // Debug values saved into the database.
+    debugging('Saved meeting record: ' . json_encode($data), DEBUG_DEVELOPER);
     
     // Trigger event
     $event = \mod_teamsmeetings\event\meeting_created::create(array(
