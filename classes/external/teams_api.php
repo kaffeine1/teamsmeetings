@@ -186,6 +186,8 @@ class teams_api {
         $response = $curl->post($url, json_encode($meeting));
         
         $result = json_decode($response);
+
+        // joinWebUrl in the response contains the meeting link.
         
         if (isset($result->id)) {
             return $result;
@@ -524,7 +526,8 @@ class teams_api {
         $response = $curl->get($url);
         
         $result = json_decode($response);
-        
+
+        // The join link is stored in the joinWebUrl field returned by the API.
         if (isset($result->joinWebUrl)) {
             return $result->joinWebUrl;
         }
