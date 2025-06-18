@@ -208,10 +208,6 @@ class teams_api {
         debugging('Teams API decoded response: ' . json_encode($result), DEBUG_DEVELOPER);
 
         // The API response should contain the join URL in the joinWebUrl field.
-        // Older Graph API versions used joinUrl, so copy it for backwards compatibility.
-        if (isset($result->joinUrl) && !isset($result->joinWebUrl)) {
-            $result->joinWebUrl = $result->joinUrl;
-        }
 
         if (isset($result->id)) {
             return $result;
@@ -556,10 +552,6 @@ class teams_api {
             return $result->joinWebUrl;
         }
 
-        // Backwards compatibility with older API responses using joinUrl.
-        if (isset($result->joinUrl)) {
-            return $result->joinUrl;
-        }
         
         return false;
     }
