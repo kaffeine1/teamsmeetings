@@ -56,7 +56,7 @@ function teamsmeetings_add_instance($data, $mform = null) {
     debugging('Resolved organizer UPN: ' . $data->organizer, DEBUG_DEVELOPER);
 
     // Debug data that will be sent to the Teams API.
-    debugging('Teams API payload: ' . json_encode($data), DEBUG_DEVELOPER);
+    debugging('Data passed to Teams API: ' . json_encode($data), DEBUG_DEVELOPER);
 
     // Create Teams meeting via API
     $teams_api = new \mod_teamsmeetings\external\teams_api();
@@ -64,6 +64,7 @@ function teamsmeetings_add_instance($data, $mform = null) {
         $meeting_info = $teams_api->create_meeting($data, $data->organizer);
 
         if ($meeting_info) {
+            debugging('Teams API response object: ' . json_encode($meeting_info), DEBUG_DEVELOPER);
             $data->meeting_id = $meeting_info->id;
             $data->join_url = $meeting_info->joinWebUrl;
         }
