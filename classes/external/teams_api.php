@@ -141,6 +141,9 @@ class teams_api {
             throw new \coding_exception('Organizer UPN cannot be empty');
         }
 
+        // Debug organizer used for the API request.
+        debugging('Creating meeting for organizer UPN: ' . $organizerupn, DEBUG_DEVELOPER);
+
         $url = self::GRAPH_API_URL . '/users/' . rawurlencode($organizerupn) . '/onlineMeetings';
 
         // Debug request URL.
