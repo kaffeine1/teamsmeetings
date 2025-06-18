@@ -142,6 +142,9 @@ class teams_api {
         }
 
         $url = self::GRAPH_API_URL . '/users/' . rawurlencode($organizerupn) . '/onlineMeetings';
+
+        // Debug request URL.
+        debugging('Teams API request URL: ' . $url, DEBUG_DEVELOPER);
         
         // Convert Moodle times to ISO format
         $start_time = date('c', $meeting_data->start_time);
@@ -169,23 +172,40 @@ class teams_api {
         if (!empty($meeting_data->intro)) {
             $meeting['description'] = strip_tags($meeting_data->intro);
         }
+
+        // Debug payload before adding recurrence.
+        debugging('Teams API request payload: ' . json_encode($meeting), DEBUG_DEVELOPER);
         
         // Add recurrence if needed
         if (!empty($meeting_data->recurring)) {
             $meeting['recurrence'] = $this->build_recurrence_pattern($meeting_data);
         }
+
+        // Debug final payload including recurrence.
+        debugging('Teams API final payload: ' . json_encode($meeting), DEBUG_DEVELOPER);
         
         $headers = array(
             'Authorization: Bearer ' . $this->access_token,
             'Content-Type: application/json'
         );
+
+        // Debug request headers.
+        debugging('Teams API request headers: ' . json_encode($headers), DEBUG_DEVELOPER);
         
         $curl = new \curl();
         $curl->setHeader($headers);
         $this->rate_limit_check();
         $response = $curl->post($url, json_encode($meeting));
+
+        // Debug raw response and HTTP status.
+        $info = $curl->get_info();
+        debugging('Teams API HTTP status: ' . ($info['http_code'] ?? 'unknown'), DEBUG_DEVELOPER);
+        debugging('Teams API raw response: ' . $response, DEBUG_DEVELOPER);
         
         $result = json_decode($response);
+
+        // Debug decoded response.
+        debugging('Teams API decoded response: ' . json_encode($result), DEBUG_DEVELOPER);
 
         // joinWebUrl in the response contains the meeting link.
         
