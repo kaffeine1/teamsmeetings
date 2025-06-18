@@ -525,8 +525,8 @@ class teams_api {
         
         $result = json_decode($response);
         
-        if (isset($result->joinUrl)) {
-            return $result->joinUrl;
+        if (isset($result->joinWebUrl)) {
+            return $result->joinWebUrl;
         }
         
         return false;

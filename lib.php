@@ -59,7 +59,7 @@ function teamsmeetings_add_instance($data, $mform = null) {
 
         if ($meeting_info) {
             $data->meeting_id = $meeting_info->id;
-            $data->join_url = $meeting_info->joinUrl;
+            $data->join_url = $meeting_info->joinWebUrl;
         }
     } catch (\Exception $e) {
         $msg = teamsmeetings_extract_error_message($e);
