@@ -96,7 +96,7 @@ try {
     redirect($returnurl, get_string('synccomplete', 'teamsmeetings', $synced), 0, 
         core\output\notification::NOTIFY_SUCCESS);
 
-} catch (Exception $e) {
+} catch (moodle_exception $e) {
     $teamsmeeting->last_sync = time();
     $teamsmeeting->sync_status = 'error';
     $DB->update_record('teamsmeetings', $teamsmeeting);
