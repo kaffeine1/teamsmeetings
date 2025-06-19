@@ -74,6 +74,7 @@ class sync_attendance extends \core\task\scheduled_task {
         );
         
         $meetings = $DB->get_records_sql($sql, $params, 0, 20); // Limit to 20 meetings
+        // TODO: schedule per-meeting ad-hoc tasks for improved scalability.
         
         if (empty($meetings)) {
             mtrace('No meetings to sync.');
@@ -160,8 +161,7 @@ class sync_attendance extends \core\task\scheduled_task {
                 $errors++;
             }
             
-            // Sleep for 1 second to avoid rate limiting
-            sleep(1);
+            // API call pacing is handled by teams_api::rate_limit_check().
         }
         
         mtrace("Teams attendance sync complete. Success: {$success}, Errors: {$errors}");
