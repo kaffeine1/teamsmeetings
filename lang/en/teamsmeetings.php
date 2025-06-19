@@ -221,6 +221,14 @@ $string['testconnection'] = 'Test connection';
 $string['connectionsuccessful'] = 'Connection successful';
 $string['connectionfailed'] = 'Connection failed: {$a}';
 
+// Debug page strings.
+$string['debugpage'] = 'Debug Teams Meeting';
+$string['debugpage_desc'] = 'Run a test meeting creation and display detailed output.';
+$string['configcheck'] = 'Configuration check';
+$string['configmissing'] = 'Configuration incomplete! Please review the plugin settings.';
+$string['upncheck'] = 'Organizer UPN verification';
+$string['apitest'] = 'API test';
+
 // Privacy API
 $string['privacy:metadata:teamsmeetings_attendance'] = 'Stores attendance summary for each meeting.';
 $string['privacy:metadata:teamsmeetings_attendance:meetingid'] = 'Meeting instance ID.';
