@@ -66,6 +66,15 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_heading('teamsmeetings/testconnection',
         get_string('testconnection', 'teamsmeetings'), $button));
 
+    // Debug page button.
+    $debugbutton = html_writer::link(
+        new moodle_url('/mod/teamsmeetings/debug_teams.php'),
+        get_string('debugpage', 'teamsmeetings'),
+        ['class' => 'btn btn-secondary']
+    );
+    $settings->add(new admin_setting_heading('teamsmeetings/debugpage',
+        get_string('debugpage', 'teamsmeetings'), $debugbutton));
+
     // Default meeting settings
     $settings->add(new admin_setting_heading('teamsmeetings/defaultsheading',
         get_string('defaultmeetingsettings', 'teamsmeetings'),

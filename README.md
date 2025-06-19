@@ -141,6 +141,7 @@ Controlla:
 1. L'utente ha una licenza Teams valida
 2. I permessi dell'app Azure sono corretti
 3. Il consenso amministratore è stato concesso
+4. Attiva la modalità debug e visita <code>/mod/teamsmeetings/debug_teams.php</code> per un test rapido
 
 ### Presenze non sincronizzate
 
