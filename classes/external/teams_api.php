@@ -56,6 +56,9 @@ class teams_api {
 
     /** @var float Timestamp of the last API call */
     private $last_api_call = 0.0;
+
+    /** @var int Number of retries when receiving a 429 response */
+    private $max_retries = 3;
     
     /**
      * Constructor
@@ -95,8 +98,7 @@ class teams_api {
         );
         
         $curl = new \curl();
-        $this->rate_limit_check();
-        $response = $curl->post($token_url, $params);
+        $response = $this->request_with_retry($curl, 'post', $token_url, $params);
         $data = json_decode($response);
         
         if (isset($data->access_token)) {
@@ -127,6 +129,71 @@ class teams_api {
             }
         }
         $this->last_api_call = microtime(true);
+    }
+
+    /**
+     * Execute a cURL request with retry on HTTP 429 responses.
+     *
+     * @param \curl $curl
+     * @param string $method get|post|patch|delete
+     * @param string $url
+     * @param mixed $data
+     * @return string response body
+     * @throws \moodle_exception after exceeding retries
+     */
+    private function request_with_retry(\curl $curl, string $method, string $url, $data = null) {
+        $attempt = 0;
+        $delay = 1;
+
+        do {
+            $this->rate_limit_check();
+
+            switch ($method) {
+                case 'get':
+                    $response = $curl->get($url);
+                    break;
+                case 'post':
+                    $response = $curl->post($url, $data);
+                    break;
+                case 'patch':
+                    $response = $curl->patch($url, $data);
+                    break;
+                case 'delete':
+                    $response = $curl->delete($url);
+                    break;
+                default:
+                    throw new \coding_exception('Invalid HTTP method: ' . $method);
+            }
+
+            $info = $curl->get_info();
+            $code = $info['http_code'] ?? 0;
+            if ($code != 429) {
+                return $response;
+            }
+
+            $attempt++;
+
+            // Check Retry-After header if available.
+            $retryafter = 0;
+            if (method_exists($curl, 'getResponseHeaders')) {
+                $headers = array_change_key_case($curl->getResponseHeaders(), CASE_LOWER);
+                if (isset($headers['retry-after'])) {
+                    $retryafter = (int)$headers['retry-after'];
+                }
+            } elseif (isset($info['retry_after'])) {
+                $retryafter = (int)$info['retry_after'];
+            }
+
+            $wait = $retryafter > 0 ? $retryafter : $delay;
+            if ($wait > 0) {
+                sleep($wait);
+            }
+            if ($retryafter <= 0) {
+                $delay *= 2;
+            }
+        } while ($attempt <= $this->max_retries);
+
+        throw new \moodle_exception('ratelimitexceeded', 'mod_teamsmeetings');
     }
     
     /**
@@ -197,8 +264,7 @@ class teams_api {
         
         $curl = new \curl();
         $curl->setHeader($headers);
-        $this->rate_limit_check();
-        $response = $curl->post($url, json_encode($meeting));
+        $response = $this->request_with_retry($curl, 'post', $url, json_encode($meeting));
 
         // Debug raw response and HTTP status.
         $info = $curl->get_info();
@@ -251,8 +317,7 @@ class teams_api {
         
         $curl = new \curl();
         $curl->setHeader($headers);
-        $this->rate_limit_check();
-        $response = $curl->patch($url, json_encode($update_data));
+        $response = $this->request_with_retry($curl, 'patch', $url, json_encode($update_data));
 
         $result = json_decode($response);
         if ($response === false || isset($result->error)) {
@@ -284,8 +349,7 @@ class teams_api {
         
         $curl = new \curl();
         $curl->setHeader($headers);
-        $this->rate_limit_check();
-        $response = $curl->delete($url);
+        $response = $this->request_with_retry($curl, 'delete', $url);
 
         $result = json_decode($response);
         if ($response === false || isset($result->error)) {
@@ -320,8 +384,7 @@ class teams_api {
         
         $curl = new \curl();
         $curl->setHeader($headers);
-        $this->rate_limit_check();
-        $response = $curl->get($url);
+        $response = $this->request_with_retry($curl, 'get', $url);
         
         $result = json_decode($response);
         
@@ -366,8 +429,7 @@ class teams_api {
         
         $curl = new \curl();
         $curl->setHeader($headers);
-        $this->rate_limit_check();
-        $response = $curl->get($url);
+        $response = $this->request_with_retry($curl, 'get', $url);
         
         $result = json_decode($response);
 
@@ -545,8 +607,7 @@ class teams_api {
         
         $curl = new \curl();
         $curl->setHeader($headers);
-        $this->rate_limit_check();
-        $response = $curl->get($url);
+        $response = $this->request_with_retry($curl, 'get', $url);
         
         $result = json_decode($response);
 
