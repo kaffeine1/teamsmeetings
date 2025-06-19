@@ -217,7 +217,7 @@ class teams_api {
         }
 
         $message = isset($result->error->message) ? $result->error->message : $response;
-        throw new \Exception('Failed to create Teams meeting: ' . $message);
+        throw new \moodle_exception('meetingcreationerror', 'teamsmeetings', '', null, $message);
     }
     
     /**
@@ -257,7 +257,7 @@ class teams_api {
         $result = json_decode($response);
         if ($response === false || isset($result->error)) {
             $message = isset($result->error->message) ? $result->error->message : $response;
-            throw new \Exception('Failed to update Teams meeting: ' . $message);
+            throw new \moodle_exception('meetingupdateerror', 'teamsmeetings', '', null, $message);
         }
 
         return true;
@@ -290,7 +290,7 @@ class teams_api {
         $result = json_decode($response);
         if ($response === false || isset($result->error)) {
             $message = isset($result->error->message) ? $result->error->message : $response;
-            throw new \Exception('Failed to delete Teams meeting: ' . $message);
+            throw new \moodle_exception('meetingdeleteerror', 'teamsmeetings', '', null, $message);
         }
 
         return true;
@@ -330,9 +330,9 @@ class teams_api {
             if ($result->error->code === 'Forbidden' || $result->error->code === 'Unauthorized') {
                 $message = 'Permessi insufficienti per accedere ai report presenze. ' .
                         'Verificare che l\'app abbia il permesso OnlineMeetingArtifact.Read.All';
-                throw new \Exception($message);
+                throw new \moodle_exception('syncerror', 'teamsmeetings', '', null, $message);
             }
-            throw new \Exception('Errore API Teams: ' . $result->error->message);
+            throw new \moodle_exception('syncerror', 'teamsmeetings', '', null, $result->error->message);
         }
         
         if (isset($result->value) && !empty($result->value)) {
@@ -376,10 +376,10 @@ class teams_api {
         }
 
         if (isset($result->error)) {
-            throw new \Exception('Errore API Teams: ' . $result->error->message);
+            throw new \moodle_exception('syncerror', 'teamsmeetings', '', null, $result->error->message);
         }
 
-        throw new \Exception('Unexpected response when retrieving attendance details: ' . $response);
+        throw new \moodle_exception('syncerror', 'teamsmeetings', '', null, 'Unexpected response when retrieving attendance details: ' . $response);
     }
     
     /**

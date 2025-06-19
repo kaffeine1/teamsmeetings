@@ -68,7 +68,7 @@ function teamsmeetings_add_instance($data, $mform = null) {
             $data->meeting_id = $meeting_info->id;
             $data->join_url = $meeting_info->joinWebUrl;
         }
-    } catch (\Exception $e) {
+    } catch (\moodle_exception $e) {
         $msg = teamsmeetings_extract_error_message($e);
         debugging('Teams API create_meeting error: ' . $msg, DEBUG_DEVELOPER);
         \core\notification::add(get_string('meetingcreationerror', 'teamsmeetings', $msg),
@@ -111,7 +111,7 @@ function teamsmeetings_update_instance($data, $mform = null) {
     $teams_api = new \mod_teamsmeetings\external\teams_api();
     try {
         $teams_api->update_meeting($data, $data->organizer);
-    } catch (\Exception $e) {
+    } catch (\moodle_exception $e) {
         $msg = teamsmeetings_extract_error_message($e);
         debugging('Teams API update_meeting error: ' . $msg, DEBUG_DEVELOPER);
         \core\notification::add(get_string('meetingupdateerror', 'teamsmeetings', $msg),
@@ -139,7 +139,7 @@ function teamsmeetings_delete_instance($id) {
         $teams_api = new \mod_teamsmeetings\external\teams_api();
         try {
             $teams_api->delete_meeting($meeting->meeting_id, $meeting->organizer);
-        } catch (\Exception $e) {
+        } catch (\moodle_exception $e) {
             $msg = teamsmeetings_extract_error_message($e);
             debugging('Teams API delete_meeting error: ' . $msg, DEBUG_DEVELOPER);
             \core\notification::add(get_string('meetingdeleteerror', 'teamsmeetings', $msg),
@@ -358,10 +358,10 @@ function teamsmeetings_get_user_sessions($meetingid, $userid) {
 /**
  * Extract an error message from a Teams API exception.
  *
- * @param \Exception $e
+ * @param \moodle_exception $e
  * @return string
  */
-function teamsmeetings_extract_error_message(\Exception $e) {
+function teamsmeetings_extract_error_message(\moodle_exception $e) {
     $candidates = [$e->getMessage()];
     if (property_exists($e, 'debuginfo') && !empty($e->debuginfo)) {
         $candidates[] = $e->debuginfo;
