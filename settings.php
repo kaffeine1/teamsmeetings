@@ -132,9 +132,14 @@ if ($ADMIN->fulltree) {
         $syncoptions));
 
     // Beta endpoint notice.
+    global $OUTPUT;
+    $betawarning = $OUTPUT->notification(
+        get_string('betaendpointwarning', 'teamsmeetings'),
+        \core\output\notification::NOTIFY_WARNING
+    );
     $settings->add(new admin_setting_heading('teamsmeetings/betaendpointnotice',
         '',
-        get_string('betaendpointwarning', 'teamsmeetings')));
+        $betawarning));
 
     // Advanced settings
     $settings->add(new admin_setting_heading('teamsmeetings/advancedheading',
