@@ -59,6 +59,9 @@ class teams_api {
 
     /** @var int Number of retries when receiving a 429 response */
     private $max_retries = 3;
+
+    /** @var bool Debug mode flag */
+    private $debug_mode = false;
     
     /**
      * Constructor
@@ -67,6 +70,8 @@ class teams_api {
         $this->tenant_id = get_config('mod_teamsmeetings', 'tenant_id');
         $this->client_id = get_config('mod_teamsmeetings', 'client_id');
         $this->client_secret = get_config('mod_teamsmeetings', 'client_secret');
+
+        $this->debug_mode = get_config('mod_teamsmeetings', 'debug_mode');
         
         $this->get_access_token();
     }
@@ -209,12 +214,16 @@ class teams_api {
         }
 
         // Debug organizer used for the API request.
-        debugging('Creating meeting for organizer UPN: ' . $organizerupn, DEBUG_DEVELOPER);
+        if ($this->debug_mode) {
+            debugging('Creating meeting for organizer UPN: ' . $organizerupn, DEBUG_DEVELOPER);
+        }
 
         $url = self::GRAPH_API_URL . '/users/' . rawurlencode($organizerupn) . '/onlineMeetings';
 
         // Debug request URL.
-        debugging('Teams API request URL: ' . $url, DEBUG_DEVELOPER);
+        if ($this->debug_mode) {
+            debugging('Teams API request URL: ' . $url, DEBUG_DEVELOPER);
+        }
         
         // Convert Moodle times to ISO format
         $start_time = date('c', $meeting_data->start_time);
@@ -244,7 +253,9 @@ class teams_api {
         }
 
         // Debug payload before adding recurrence.
-        debugging('Teams API request payload: ' . json_encode($meeting), DEBUG_DEVELOPER);
+        if ($this->debug_mode) {
+            debugging('Teams API request payload: ' . json_encode($meeting), DEBUG_DEVELOPER);
+        }
         
         // Add recurrence if needed
         if (!empty($meeting_data->recurring)) {
@@ -252,7 +263,9 @@ class teams_api {
         }
 
         // Debug final payload including recurrence.
-        debugging('Teams API final payload: ' . json_encode($meeting), DEBUG_DEVELOPER);
+        if ($this->debug_mode) {
+            debugging('Teams API final payload: ' . json_encode($meeting), DEBUG_DEVELOPER);
+        }
         
         $headers = array(
             'Authorization: Bearer ' . $this->access_token,
@@ -260,7 +273,9 @@ class teams_api {
         );
 
         // Debug request headers.
-        debugging('Teams API request headers: ' . json_encode($headers), DEBUG_DEVELOPER);
+        if ($this->debug_mode) {
+            debugging('Teams API request headers: ' . json_encode($headers), DEBUG_DEVELOPER);
+        }
         
         $curl = new \curl();
         $curl->setHeader($headers);
@@ -268,13 +283,17 @@ class teams_api {
 
         // Debug raw response and HTTP status.
         $info = $curl->get_info();
-        debugging('Teams API HTTP status: ' . ($info['http_code'] ?? 'unknown'), DEBUG_DEVELOPER);
-        debugging('Teams API raw response: ' . $response, DEBUG_DEVELOPER);
+        if ($this->debug_mode) {
+            debugging('Teams API HTTP status: ' . ($info['http_code'] ?? 'unknown'), DEBUG_DEVELOPER);
+            debugging('Teams API raw response: ' . $response, DEBUG_DEVELOPER);
+        }
         
         $result = json_decode($response);
 
         // Debug decoded response.
-        debugging('Teams API decoded response: ' . json_encode($result), DEBUG_DEVELOPER);
+        if ($this->debug_mode) {
+            debugging('Teams API decoded response: ' . json_encode($result), DEBUG_DEVELOPER);
+        }
 
         // The API response should contain the join URL in the joinWebUrl field.
 
@@ -519,7 +538,7 @@ class teams_api {
         }
         
         // Se ci sono utenti non mappati, notifica
-        if (!empty($unmatched)) {
+        if (!empty($unmatched) && $this->debug_mode) {
             debugging('Found ' . count($unmatched) . ' unmatched Teams users for meeting ' . $meetingid, DEBUG_DEVELOPER);
         }
         
