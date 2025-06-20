@@ -86,99 +86,15 @@ class sync_attendance extends \core\task\scheduled_task {
             return;
         }
         
-        $teams_api = new \mod_teamsmeetings\external\teams_api();
-        $success = 0;
-        $errors = 0;
-        
         foreach ($meetings as $meeting) {
-            if ($debugmode) {
-                mtrace("Syncing meeting: {$meeting->name} (ID: {$meeting->id})");
-            }
-            
-            try {
-                // Get attendance data from Teams
-                $attendance_data = $teams_api->get_attendance($meeting->meeting_id, $meeting->organizer);
-                
-                if ($attendance_data === false) {
-                    if ($debugmode) {
-                        mtrace("  - No attendance data available yet");
-                    }
-                    continue;
-                }
-                
-                // Process each participant
-                $synced_users = 0;
-                foreach ($attendance_data as $participant) {
-                    if (isset($participant->userid)) {
-                        // Clear existing sessions
-                        $DB->delete_records('teamsmeetings_sessions', array(
-                            'meetingid' => $meeting->id,
-                            'userid' => $participant->userid
-                        ));
-                        
-                        // Insert new sessions
-                        if (isset($participant->sessions)) {
-                            foreach ($participant->sessions as $session) {
-                                $session_record = new \stdClass();
-                                $session_record->meetingid = $meeting->id;
-                                $session_record->userid = $participant->userid;
-                                $session_record->sessionid = uniqid('teams_');
-                                $session_record->join_time = $session->join_time;
-                                $session_record->leave_time = $session->leave_time;
-                                $session_record->duration = $session->duration;
-                                
-                                $DB->insert_record('teamsmeetings_sessions', $session_record);
-                            }
-                            
-                            // Update attendance summary
-                            teamsmeetings_update_attendance_summary($meeting->id, $participant->userid);
-                            $synced_users++;
-                        }
-                    }
-                }
-                
-                if ($debugmode) {
-                    mtrace("  - Synced {$synced_users} users");
-                }
-                
-                // Update last sync time
-                $meeting->last_sync = time();
-                $meeting->sync_status = 'success';
-                $DB->update_record('teamsmeetings', $meeting);
-                
-                $success++;
-                
-                // Log sync event
-                $context = \context_module::instance($meeting->cmid);
-                $event = \mod_teamsmeetings\event\attendance_synced::create(array(
-                    'objectid' => $meeting->id,
-                    'context' => $context,
-                    'other' => array(
-                        'synced' => $synced_users,
-                        'automatic' => true
-                    )
-                ));
-                $event->trigger();
-                
-            } catch (\Exception $e) {
-                $msg = \teamsmeetings_extract_error_message($e);
-                if ($debugmode) {
-                    mtrace("  - Error: " . $msg);
-                }
+            $task = new \mod_teamsmeetings\task\sync_meeting_attendance();
+            $task->set_component('mod_teamsmeetings');
+            $task->set_custom_data(['meetingid' => $meeting->id]);
+            \core\task\manager::queue_adhoc_task($task, true);
 
-                // Update sync status
-                $meeting->last_sync = time();
-                $meeting->sync_status = 'error';
-                $DB->update_record('teamsmeetings', $meeting);
-                
-                $errors++;
+            if ($debugmode) {
+                mtrace("Queued sync for meeting: {$meeting->name} (ID: {$meeting->id})");
             }
-            
-            // API call pacing is handled by teams_api::rate_limit_check().
-        }
-        
-        if ($debugmode) {
-            mtrace("Teams attendance sync complete. Success: {$success}, Errors: {$errors}");
         }
     }
 }
