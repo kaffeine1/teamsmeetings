@@ -99,6 +99,8 @@ $string['meetinghasended'] = 'Il meeting è terminato';
 $string['nojoinurl'] = 'URL di partecipazione non disponibile';
 $string['meetinglink'] = 'Link al meeting';
 $string['openinteams'] = 'Apri in Microsoft Teams';
+$string['cannotjoinyet'] = 'Non puoi ancora partecipare al meeting';
+$string['cannotjoinended'] = 'Il meeting si è già concluso';
 
 // Report presenze
 $string['attendancereport'] = 'Report presenze';

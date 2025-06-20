@@ -45,22 +45,32 @@ require_login($course, true, $cm);
 
 $context = context_module::instance($cm->id);
 
+// Store potential join error to display later.
+$joinerror = null;
+
 // Handle join action
 if ($action == 'join' && confirm_sesskey()) {
     require_capability('mod/teamsmeetings:view', $context);
-    
-    // Trigger event
-    $event = \mod_teamsmeetings\event\meeting_joined::create(array(
-        'objectid' => $teamsmeetings->id,
-        'context' => $context,
-    ));
-    $event->trigger();
-    
-    // Redirect to Teams meeting
-    if ($teamsmeetings->join_url) {
-        redirect($teamsmeetings->join_url);
+
+    $now = time();
+    if ($now < ($teamsmeetings->start_time - 900)) { // Allow joining 15 minutes early.
+        $joinerror = 'cannotjoinyet';
+    } else if ($teamsmeetings->end_time && $now > ($teamsmeetings->end_time + 3600)) { // Allow 1 hour after end.
+        $joinerror = 'cannotjoinended';
     } else {
-        print_error('nojoinurl', 'teamsmeetings');
+        // Trigger event only when redirecting.
+        $event = \mod_teamsmeetings\event\meeting_joined::create(array(
+            'objectid' => $teamsmeetings->id,
+            'context' => $context,
+        ));
+        $event->trigger();
+
+        // Redirect to Teams meeting
+        if ($teamsmeetings->join_url) {
+            redirect($teamsmeetings->join_url);
+        } else {
+            print_error('nojoinurl', 'teamsmeetings');
+        }
     }
 }
 
@@ -84,6 +94,11 @@ $PAGE->set_context($context);
 
 // Output starts here
 echo $OUTPUT->header();
+
+// Display any join attempt errors.
+if ($joinerror) {
+    echo $OUTPUT->notification(get_string($joinerror, 'teamsmeetings'), \core\output\notification::NOTIFY_ERROR);
+}
 
 // Display heading
 echo $OUTPUT->heading(format_string($teamsmeetings->name), 2);
