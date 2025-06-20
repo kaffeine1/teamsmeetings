@@ -117,7 +117,10 @@ foreach ($unmatched as $u) {
     ]);
     $form .= html_writer::end_tag('form');
 
-    $table->data[] = [$u->teams_email, $u->teams_displayname, $form];
+    // Escape raw Teams data before output to prevent XSS.
+    $teamsemail = s($u->teams_email);
+    $teamsdisplayname = s($u->teams_displayname);
+    $table->data[] = [$teamsemail, $teamsdisplayname, $form];
 }
 
 echo html_writer::table($table);
