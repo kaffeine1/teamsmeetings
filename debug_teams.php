@@ -87,9 +87,43 @@ if (!filter_var($organizerupn, FILTER_VALIDATE_EMAIL)) {
 
 echo html_writer::tag('h3', get_string('apitest', 'teamsmeetings'));
 
-try {
-    $teamsapi = new \mod_teamsmeetings\external\teams_api();
-    echo $OUTPUT->notification('Token obtained', \core\output\notification::NOTIFY_SUCCESS);
+    try {
+        $teamsapi = new \mod_teamsmeetings\external\teams_api();
+        echo $OUTPUT->notification('Token obtained', \core\output\notification::NOTIFY_SUCCESS);
+
+        $token = $teamsapi->get_access_token_debug();
+        $curl = new curl();
+        $curl->setHeader([
+            'Authorization: Bearer ' . $token,
+            'Content-Type: application/json'
+        ]);
+
+        $userurl = \mod_teamsmeetings\external\teams_api::GRAPH_API_URL . '/users/' . rawurlencode($organizerupn) . '?$select=userPrincipalName,assignedPlans';
+        $userresp = $curl->get($userurl);
+        $userdata = json_decode($userresp);
+
+        $skuurl = \mod_teamsmeetings\external\teams_api::GRAPH_API_URL . '/subscribedSkus';
+        $skuresp = $curl->get($skuurl);
+        $skuinfo = json_decode($skuresp);
+
+        $hasteamsplan = false;
+        if (!empty($userdata->assignedPlans)) {
+            foreach ($userdata->assignedPlans as $plan) {
+                if (!empty($plan->service) && preg_match('/teams/i', $plan->service)) {
+                    $hasteamsplan = true;
+                    break;
+                }
+            }
+        }
+
+        echo html_writer::tag('h3', get_string('licensecheck', 'teamsmeetings'));
+        echo html_writer::div(get_string('teamsmeetingcapability', 'teamsmeetings') . ': ' .
+            ($hasteamsplan ? get_string('yes') : get_string('no')), 'alert alert-info');
+
+        echo html_writer::start_div();
+        echo '<pre>' . s(json_encode($userdata, JSON_PRETTY_PRINT)) . '</pre>';
+        echo '<pre>' . s(json_encode($skuinfo, JSON_PRETTY_PRINT)) . '</pre>';
+        echo html_writer::end_div();
 
     $testmeeting = new stdClass();
     $testmeeting->name = 'Debug meeting - '.date('Y-m-d H:i:s');

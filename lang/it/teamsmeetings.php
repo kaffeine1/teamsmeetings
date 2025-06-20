@@ -226,6 +226,8 @@ $string['configcheck'] = 'Verifica configurazione';
 $string['configmissing'] = 'Configurazione incompleta! Controlla le impostazioni del plugin.';
 $string['upncheck'] = 'Verifica UPN organizzatore';
 $string['apitest'] = 'Test API';
+$string['licensecheck'] = 'Verifica licenze';
+$string['teamsmeetingcapability'] = 'Funzionalità riunioni Teams';
 
 // Privacy API
 $string['privacy:metadata:teamsmeetings_attendance'] = 'Registra il riepilogo presenze per ogni meeting.';
