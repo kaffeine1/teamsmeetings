@@ -200,6 +200,7 @@ $string['betaendpointwarning'] = 'La rilevazione presenze si basa sulle API Beta
 
 // Task schedulati
 $string['syncattendancetask'] = 'Sincronizzazione presenze Teams Meeting';
+$string['syncsinglemeetingtask'] = 'Sincronizza presenze meeting singolo';
 
 // Messaggi generali
 $string['nomeetings'] = 'Nessun Teams Meeting in questo corso';

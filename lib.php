@@ -376,6 +376,77 @@ function teamsmeetings_get_user_sessions($meetingid, $userid) {
 }
 
 /**
+ * Sync attendance for a single meeting from Microsoft Teams.
+ *
+ * @param stdClass $meeting  Meeting record with cmid property
+ * @param bool $automatic    Whether the sync is triggered automatically
+ */
+function teamsmeetings_sync_meeting_attendance($meeting, $automatic = true) {
+    global $DB;
+
+    $debugmode = get_config('mod_teamsmeetings', 'debug_mode');
+
+    if ($debugmode) {
+        mtrace("Syncing meeting: {$meeting->name} (ID: {$meeting->id})");
+    }
+
+    $teams_api = new \mod_teamsmeetings\external\teams_api();
+
+    $attendance_data = $teams_api->get_attendance($meeting->meeting_id, $meeting->organizer);
+    if ($attendance_data === false) {
+        if ($debugmode) {
+            mtrace('  - No attendance data available yet');
+        }
+        return;
+    }
+
+    $synced_users = 0;
+    foreach ($attendance_data as $participant) {
+        if (isset($participant->userid)) {
+            $DB->delete_records('teamsmeetings_sessions', [
+                'meetingid' => $meeting->id,
+                'userid' => $participant->userid
+            ]);
+
+            if (!empty($participant->sessions)) {
+                foreach ($participant->sessions as $session) {
+                    $session_record = new stdClass();
+                    $session_record->meetingid = $meeting->id;
+                    $session_record->userid = $participant->userid;
+                    $session_record->sessionid = uniqid('teams_');
+                    $session_record->join_time = $session->join_time;
+                    $session_record->leave_time = $session->leave_time;
+                    $session_record->duration = $session->duration;
+                    $DB->insert_record('teamsmeetings_sessions', $session_record);
+                }
+
+                teamsmeetings_update_attendance_summary($meeting->id, $participant->userid);
+                $synced_users++;
+            }
+        }
+    }
+
+    if ($debugmode) {
+        mtrace("  - Synced {$synced_users} users");
+    }
+
+    $meeting->last_sync = time();
+    $meeting->sync_status = 'success';
+    $DB->update_record('teamsmeetings', $meeting);
+
+    $context = \context_module::instance($meeting->cmid);
+    $event = \mod_teamsmeetings\event\attendance_synced::create([
+        'objectid' => $meeting->id,
+        'context' => $context,
+        'other' => [
+            'synced' => $synced_users,
+            'automatic' => $automatic
+        ]
+    ]);
+    $event->trigger();
+}
+
+/**
  * Extract an error message from a Teams API exception.
  *
  * @param \moodle_exception $e

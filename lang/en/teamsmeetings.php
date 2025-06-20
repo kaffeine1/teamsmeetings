@@ -202,6 +202,7 @@ $string['betaendpointwarning'] = 'Attendance relies on Microsoft Graph Beta APIs
 
 // Scheduled tasks
 $string['syncattendancetask'] = 'Teams Meeting attendance sync';
+$string['syncsinglemeetingtask'] = 'Sync single Teams Meeting attendance';
 
 // General messages
 $string['nomeetings'] = 'No Teams Meetings in this course';
