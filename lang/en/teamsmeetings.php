@@ -228,6 +228,8 @@ $string['configcheck'] = 'Configuration check';
 $string['configmissing'] = 'Configuration incomplete! Please review the plugin settings.';
 $string['upncheck'] = 'Organizer UPN verification';
 $string['apitest'] = 'API test';
+$string['licensecheck'] = 'License check';
+$string['teamsmeetingcapability'] = 'Teams meeting capability';
 
 // Privacy API
 $string['privacy:metadata:teamsmeetings_attendance'] = 'Stores attendance summary for each meeting.';

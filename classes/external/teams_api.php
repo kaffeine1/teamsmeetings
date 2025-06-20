@@ -122,6 +122,15 @@ class teams_api {
     }
 
     /**
+     * Public accessor to retrieve a valid access token for debugging purposes.
+     *
+     * @return string
+     */
+    public function get_access_token_debug() {
+        return $this->get_access_token();
+    }
+
+    /**
      * Rate limit API calls to avoid hitting service limits
      */
     private function rate_limit_check() {
