@@ -47,8 +47,11 @@ class sync_attendance extends \core\task\scheduled_task {
      */
     public function execute() {
         global $DB;
-        
-        mtrace('Starting Teams attendance sync...');
+        $debugmode = get_config('mod_teamsmeetings', 'debug_mode');
+
+        if ($debugmode) {
+            mtrace('Starting Teams attendance sync...');
+        }
         
         // Get all meetings that need sync
         // Meetings that ended in the last 7 days or are currently active
@@ -77,7 +80,9 @@ class sync_attendance extends \core\task\scheduled_task {
         // TODO: schedule per-meeting ad-hoc tasks for improved scalability.
         
         if (empty($meetings)) {
-            mtrace('No meetings to sync.');
+            if ($debugmode) {
+                mtrace('No meetings to sync.');
+            }
             return;
         }
         
@@ -86,14 +91,18 @@ class sync_attendance extends \core\task\scheduled_task {
         $errors = 0;
         
         foreach ($meetings as $meeting) {
-            mtrace("Syncing meeting: {$meeting->name} (ID: {$meeting->id})");
+            if ($debugmode) {
+                mtrace("Syncing meeting: {$meeting->name} (ID: {$meeting->id})");
+            }
             
             try {
                 // Get attendance data from Teams
                 $attendance_data = $teams_api->get_attendance($meeting->meeting_id, $meeting->organizer);
                 
                 if ($attendance_data === false) {
-                    mtrace("  - No attendance data available yet");
+                    if ($debugmode) {
+                        mtrace("  - No attendance data available yet");
+                    }
                     continue;
                 }
                 
@@ -128,7 +137,9 @@ class sync_attendance extends \core\task\scheduled_task {
                     }
                 }
                 
-                mtrace("  - Synced {$synced_users} users");
+                if ($debugmode) {
+                    mtrace("  - Synced {$synced_users} users");
+                }
                 
                 // Update last sync time
                 $meeting->last_sync = time();
@@ -151,7 +162,9 @@ class sync_attendance extends \core\task\scheduled_task {
                 
             } catch (\Exception $e) {
                 $msg = \teamsmeetings_extract_error_message($e);
-                mtrace("  - Error: " . $msg);
+                if ($debugmode) {
+                    mtrace("  - Error: " . $msg);
+                }
 
                 // Update sync status
                 $meeting->last_sync = time();
@@ -164,6 +177,8 @@ class sync_attendance extends \core\task\scheduled_task {
             // API call pacing is handled by teams_api::rate_limit_check().
         }
         
-        mtrace("Teams attendance sync complete. Success: {$success}, Errors: {$errors}");
+        if ($debugmode) {
+            mtrace("Teams attendance sync complete. Success: {$success}, Errors: {$errors}");
+        }
     }
 }

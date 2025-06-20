@@ -37,6 +37,8 @@ require_login($course, false, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/teamsmeetings:syncattendance', $context);
 
+$debugmode = get_config('mod_teamsmeetings', 'debug_mode');
+
 $returnurl = new moodle_url('/mod/teamsmeetings/attendance.php', ['id' => $cm->id]);
 
 if (empty($teamsmeeting->meeting_id)) {
@@ -102,7 +104,9 @@ try {
     $DB->update_record('teamsmeetings', $teamsmeeting);
 
     $msg = teamsmeetings_extract_error_message($e);
-    debugging('Teams API sync error: ' . $msg, DEBUG_DEVELOPER);
+    if ($debugmode) {
+        debugging('Teams API sync error: ' . $msg, DEBUG_DEVELOPER);
+    }
 
     redirect($returnurl, get_string('syncerrorwithmsg', 'teamsmeetings', $msg), 0,
         core\output\notification::NOTIFY_ERROR);

@@ -33,6 +33,8 @@ defined('MOODLE_INTERNAL') || die();
  */
 function teamsmeetings_add_instance($data, $mform = null) {
     global $DB, $USER;
+
+    $debugmode = get_config('mod_teamsmeetings', 'debug_mode');
     
     $data->timecreated = time();
     $data->timemodified = time();
@@ -53,10 +55,14 @@ function teamsmeetings_add_instance($data, $mform = null) {
     }
 
     // Debug resolved organizer.
-    debugging('Resolved organizer UPN: ' . $data->organizer, DEBUG_DEVELOPER);
+    if ($debugmode) {
+        debugging('Resolved organizer UPN: ' . $data->organizer, DEBUG_DEVELOPER);
+    }
 
     // Debug data that will be sent to the Teams API.
-    debugging('Data passed to Teams API: ' . json_encode($data), DEBUG_DEVELOPER);
+    if ($debugmode) {
+        debugging('Data passed to Teams API: ' . json_encode($data), DEBUG_DEVELOPER);
+    }
 
     // Create Teams meeting via API
     $teams_api = new \mod_teamsmeetings\external\teams_api();
@@ -64,13 +70,17 @@ function teamsmeetings_add_instance($data, $mform = null) {
         $meeting_info = $teams_api->create_meeting($data, $data->organizer);
 
         if ($meeting_info) {
-            debugging('Teams API response object: ' . json_encode($meeting_info), DEBUG_DEVELOPER);
+            if ($debugmode) {
+                debugging('Teams API response object: ' . json_encode($meeting_info), DEBUG_DEVELOPER);
+            }
             $data->meeting_id = $meeting_info->id;
             $data->join_url = $meeting_info->joinWebUrl;
         }
     } catch (\moodle_exception $e) {
         $msg = teamsmeetings_extract_error_message($e);
-        debugging('Teams API create_meeting error: ' . $msg, DEBUG_DEVELOPER);
+        if ($debugmode) {
+            debugging('Teams API create_meeting error: ' . $msg, DEBUG_DEVELOPER);
+        }
         \core\notification::add(get_string('meetingcreationerror', 'teamsmeetings', $msg),
             \core\output\notification::NOTIFY_ERROR);
     }
@@ -78,7 +88,9 @@ function teamsmeetings_add_instance($data, $mform = null) {
     $data->id = $DB->insert_record('teamsmeetings', $data);
 
     // Debug values saved into the database.
-    debugging('Saved meeting record: ' . json_encode($data), DEBUG_DEVELOPER);
+    if ($debugmode) {
+        debugging('Saved meeting record: ' . json_encode($data), DEBUG_DEVELOPER);
+    }
     
     // Trigger event
     $event = \mod_teamsmeetings\event\meeting_created::create(array(
@@ -99,6 +111,8 @@ function teamsmeetings_add_instance($data, $mform = null) {
  */
 function teamsmeetings_update_instance($data, $mform = null) {
     global $DB;
+
+    $debugmode = get_config('mod_teamsmeetings', 'debug_mode');
     
     $data->timemodified = time();
     $data->id = $data->instance;
@@ -113,7 +127,9 @@ function teamsmeetings_update_instance($data, $mform = null) {
         $teams_api->update_meeting($data, $data->organizer);
     } catch (\moodle_exception $e) {
         $msg = teamsmeetings_extract_error_message($e);
-        debugging('Teams API update_meeting error: ' . $msg, DEBUG_DEVELOPER);
+        if ($debugmode) {
+            debugging('Teams API update_meeting error: ' . $msg, DEBUG_DEVELOPER);
+        }
         \core\notification::add(get_string('meetingupdateerror', 'teamsmeetings', $msg),
             \core\output\notification::NOTIFY_ERROR);
     }
@@ -129,6 +145,8 @@ function teamsmeetings_update_instance($data, $mform = null) {
  */
 function teamsmeetings_delete_instance($id) {
     global $DB;
+
+    $debugmode = get_config('mod_teamsmeetings', 'debug_mode');
     
     if (!$meeting = $DB->get_record('teamsmeetings', array('id' => $id))) {
         return false;
@@ -141,7 +159,9 @@ function teamsmeetings_delete_instance($id) {
             $teams_api->delete_meeting($meeting->meeting_id, $meeting->organizer);
         } catch (\moodle_exception $e) {
             $msg = teamsmeetings_extract_error_message($e);
-            debugging('Teams API delete_meeting error: ' . $msg, DEBUG_DEVELOPER);
+            if ($debugmode) {
+                debugging('Teams API delete_meeting error: ' . $msg, DEBUG_DEVELOPER);
+            }
             \core\notification::add(get_string('meetingdeleteerror', 'teamsmeetings', $msg),
                 \core\output\notification::NOTIFY_ERROR);
         }
