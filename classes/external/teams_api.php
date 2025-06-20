@@ -302,7 +302,7 @@ class teams_api {
         }
 
         $message = isset($result->error->message) ? $result->error->message : $response;
-        throw new \moodle_exception('meetingcreationerror', 'teamsmeetings', '', null, $message);
+        throw new \moodle_exception('meetingcreationerror', 'teamsmeetings', '', $message, $response);
     }
     
     /**
@@ -341,7 +341,7 @@ class teams_api {
         $result = json_decode($response);
         if ($response === false || isset($result->error)) {
             $message = isset($result->error->message) ? $result->error->message : $response;
-            throw new \moodle_exception('meetingupdateerror', 'teamsmeetings', '', null, $message);
+            throw new \moodle_exception('meetingupdateerror', 'teamsmeetings', '', $message, $response);
         }
 
         return true;
@@ -373,7 +373,7 @@ class teams_api {
         $result = json_decode($response);
         if ($response === false || isset($result->error)) {
             $message = isset($result->error->message) ? $result->error->message : $response;
-            throw new \moodle_exception('meetingdeleteerror', 'teamsmeetings', '', null, $message);
+            throw new \moodle_exception('meetingdeleteerror', 'teamsmeetings', '', $message, $response);
         }
 
         return true;
