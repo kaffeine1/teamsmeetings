@@ -182,6 +182,17 @@ Per problemi o domande:
 2. Verifica i log di Moodle
 3. Apri una issue su GitHub
 
+## Esecuzione dei test
+
+I test unitari devono essere eseguiti dalla root di un'installazione Moodle. In
+particolare occorre inizializzare l'ambiente di PHPUnit e lanciare i test del
+plugin con i seguenti comandi:
+
+```bash
+php admin/tool/phpunit/cli/init.php
+vendor/bin/phpunit mod/teamsmeetings
+```
+
 ## Licenza
 
 GPL v3 o successiva
