@@ -464,6 +464,33 @@ class teams_api {
 
         return true;
     }
+
+    /**
+     * Delete a calendar event that hosts a Teams meeting.
+     *
+     * @param string $eventid Calendar event identifier
+     * @param string $organizerupn Organizer UPN
+     * @return bool
+     */
+    protected function delete_meeting_via_calendar(string $eventid, string $organizerupn) {
+        $url = self::GRAPH_API_URL . '/users/' . rawurlencode($organizerupn) . '/events/' . $eventid;
+
+        $headers = array(
+            'Authorization: Bearer ' . $this->access_token
+        );
+
+        $curl = new \curl();
+        $curl->setHeader($headers);
+        $response = $this->request_with_retry($curl, 'delete', $url);
+
+        $result = json_decode($response);
+        if ($response === false || isset($result->error)) {
+            $message = isset($result->error->message) ? $result->error->message : $response;
+            throw new \moodle_exception('meetingdeleteerror', 'teamsmeetings', '', $message, $response);
+        }
+
+        return true;
+    }
     
     /**
      * Delete a Teams meeting
@@ -472,18 +499,26 @@ class teams_api {
      * @param string $organizerupn Organizer UPN
      * @return bool
      */
-    public function delete_meeting($meeting_id, string $organizerupn) {
+    public function delete_meeting($meeting_id, string $organizerupn, ?bool $viacalendar = null) {
         $organizerupn = trim($organizerupn);
         if (empty($organizerupn)) {
             throw new \coding_exception('Organizer UPN cannot be empty');
         }
-        
+
+        if ($viacalendar === null) {
+            $viacalendar = preg_match('/^(AAMk|AQMk)/', $meeting_id) === 1;
+        }
+
+        if ($viacalendar) {
+            return $this->delete_meeting_via_calendar($meeting_id, $organizerupn);
+        }
+
         $url = self::GRAPH_API_URL . '/users/' . rawurlencode($organizerupn) . '/onlineMeetings/' . $meeting_id;
-        
+
         $headers = array(
             'Authorization: Bearer ' . $this->access_token
         );
-        
+
         $curl = new \curl();
         $curl->setHeader($headers);
         $response = $this->request_with_retry($curl, 'delete', $url);
