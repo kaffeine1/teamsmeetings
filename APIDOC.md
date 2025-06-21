@@ -9,7 +9,7 @@ Located at `classes/external/teams_api.php`, this class wraps calls to Microsoft
 ### Public methods
 
 - `__construct()` – Reads plugin settings and obtains an access token from Azure AD.
-- `create_meeting(stdClass $meeting_data, string $organizerupn): stdClass` – Creates a meeting and returns the response from Microsoft Graph.
+- `create_meeting(stdClass $meeting_data, string $organizerupn): stdClass` – Creates a meeting and returns the response from Microsoft Graph. The method first attempts a direct call and, if that fails and the `use_calendar_fallback` setting is enabled, retries using the calendar API.
 - `update_meeting(stdClass $meeting_data, string $organizerupn): bool` – Updates a meeting with new times or subject.
 - `delete_meeting(string $meeting_id, string $organizerupn): bool` – Deletes a meeting.
 - `get_attendance(string $meeting_id, string $organizerupn): array|false` – Retrieves attendance data for a finished meeting.

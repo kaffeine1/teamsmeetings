@@ -5,6 +5,7 @@ Plugin per Moodle che permette ai docenti di creare e gestire meeting Microsoft 
 ## Caratteristiche principali
 
 - ✅ Creazione meeting Teams direttamente da Moodle
+- ✅ Se la creazione diretta fallisce, il plugin prova automaticamente via calendario (richiede permesso Calendars.ReadWrite)
 - ✅ Integrazione completa con Microsoft Teams
 - ✅ Tracciamento automatico delle presenze
 - ✅ Report dettagliati con ora di connessione/disconnessione
@@ -142,6 +143,7 @@ Controlla:
 2. I permessi dell'app Azure sono corretti
 3. Il consenso amministratore è stato concesso
 4. Attiva la modalità debug e visita <code>/mod/teamsmeetings/debug_teams.php</code> per un test rapido
+5. In caso di errore, se abilitato il fallback calendario, controlla che il permesso Calendars.ReadWrite sia presente
 
 ### Presenze non sincronizzate
 
