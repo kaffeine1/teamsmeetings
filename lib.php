@@ -77,6 +77,7 @@ function teamsmeetings_add_instance($data, $mform = null) {
             $data->join_url = $meeting_info->joinWebUrl;
 
             if (isset($meeting_info->creation_method)) {
+                $data->creation_method = $meeting_info->creation_method;
                 if ($meeting_info->creation_method === 'calendar') {
                     \core\notification::add(
                         get_string('meetingcreatedviacalendar', 'mod_teamsmeetings'),
@@ -88,6 +89,8 @@ function teamsmeetings_add_instance($data, $mform = null) {
                         \core\output\notification::NOTIFY_SUCCESS
                     );
                 }
+            } else {
+                $data->creation_method = 'direct';
             }
         }
     } catch (\moodle_exception $e) {
@@ -131,14 +134,16 @@ function teamsmeetings_update_instance($data, $mform = null) {
     $data->timemodified = time();
     $data->id = $data->instance;
     
-    // Preserve organizer
-    $existing = $DB->get_record('teamsmeetings', ['id' => $data->id], 'organizer');
+    // Preserve organizer and creation method
+    $existing = $DB->get_record('teamsmeetings', ['id' => $data->id], 'organizer, creation_method');
     $data->organizer = $existing->organizer;
+    $data->creation_method = $existing->creation_method;
 
     // Update Teams meeting via API.
     $teams_api = new \mod_teamsmeetings\external\teams_api();
     try {
-        $teams_api->update_meeting($data, $data->organizer);
+        $viacalendar = ($data->creation_method === 'calendar');
+        $teams_api->update_meeting($data, $data->organizer, $viacalendar);
     } catch (\moodle_exception $e) {
         $msg = teamsmeetings_extract_error_message($e);
         if ($debugmode) {
@@ -170,7 +175,8 @@ function teamsmeetings_delete_instance($id) {
     if ($meeting->meeting_id) {
         $teams_api = new \mod_teamsmeetings\external\teams_api();
         try {
-            $teams_api->delete_meeting($meeting->meeting_id, $meeting->organizer);
+            $viacalendar = ($meeting->creation_method === 'calendar');
+            $teams_api->delete_meeting($meeting->meeting_id, $meeting->organizer, $viacalendar);
         } catch (\moodle_exception $e) {
             $msg = teamsmeetings_extract_error_message($e);
             if ($debugmode) {
