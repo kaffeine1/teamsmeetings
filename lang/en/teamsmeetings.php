@@ -210,6 +210,10 @@ $string['syncsinglemeetingtask'] = 'Sync single Teams Meeting attendance';
 
 // General messages
 $string['nomeetings'] = 'No Teams Meetings in this course';
+$string['meetingcreatedviacalendar'] = 'Meeting created successfully using Calendar integration (fallback method)';
+$string['meetingcreatedviadirect'] = 'Meeting created successfully using direct Teams API';
+$string['calendarfallbackinfo'] = 'This meeting was created using Calendar integration due to license limitations';
+$string['directapiinfo'] = 'This meeting was created using direct Teams API';
 
 // Unmatched users
 $string['unmatchedusers'] = 'Unrecognised Teams users';

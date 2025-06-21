@@ -206,6 +206,10 @@ $string['syncsinglemeetingtask'] = 'Sincronizza presenze meeting singolo';
 
 // Messaggi generali
 $string['nomeetings'] = 'Nessun Teams Meeting in questo corso';
+$string['meetingcreatedviacalendar'] = 'Meeting creato con successo tramite integrazione Calendario (metodo alternativo)';
+$string['meetingcreatedviadirect'] = 'Meeting creato con successo tramite API Teams diretta';
+$string['calendarfallbackinfo'] = 'Questo meeting è stato creato tramite integrazione Calendario a causa di limitazioni della licenza';
+$string['directapiinfo'] = 'Questo meeting è stato creato tramite API Teams diretta';
 
 // Utenti non mappati
 $string['unmatchedusers'] = 'Utenti Teams non riconosciuti';
