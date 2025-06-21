@@ -427,9 +427,10 @@ class teams_api {
      * Update a Teams meeting
      * * @param stdClass $meeting_data
      * @param string $organizerupn
+     * @param bool|null $viacalendar When true uses the calendar events endpoint
      * @return bool
      */
-    public function update_meeting($meeting_data, $organizerupn) {
+    public function update_meeting($meeting_data, $organizerupn, ?bool $viacalendar = null) {
         $organizerupn = trim($organizerupn);
         if (empty($organizerupn)) {
             throw new \coding_exception('Organizer UPN cannot be empty');
@@ -439,7 +440,11 @@ class teams_api {
             return false;
         }
 
-        if (preg_match('/^(AAMk|AQMk)/', $meeting_data->meeting_id)) {
+        if ($viacalendar === null) {
+            $viacalendar = preg_match('/^(AAMk|AQMk)/', $meeting_data->meeting_id) === 1;
+        }
+
+        if ($viacalendar) {
             return $this->update_meeting_via_calendar($meeting_data, $organizerupn);
         }
 
