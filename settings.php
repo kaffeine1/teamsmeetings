@@ -168,6 +168,12 @@ if ($ADMIN->fulltree) {
         get_string('debugmode_desc', 'teamsmeetings'),
         0));
 
+    // Use calendar fallback
+    $settings->add(new admin_setting_configcheckbox('mod_teamsmeetings/use_calendar_fallback',
+        get_string('use_calendar_fallback', 'teamsmeetings'),
+        get_string('use_calendar_fallback_desc', 'teamsmeetings'),
+        1));
+
     // Cache duration
     $settings->add(new admin_setting_configtext('mod_teamsmeetings/cache_duration',
         get_string('cacheduration', 'teamsmeetings'),

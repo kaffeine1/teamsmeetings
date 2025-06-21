@@ -193,6 +193,8 @@ $string['debugmode'] = 'Debug mode';
 $string['debugmode_desc'] = 'Enable detailed logs for troubleshooting';
 $string['cacheduration'] = 'Cache duration (seconds)';
 $string['cacheduration_desc'] = 'How long to keep access tokens in cache';
+$string['use_calendar_fallback'] = 'Use calendar fallback';
+$string['use_calendar_fallback_desc'] = 'If direct meeting creation fails, attempt to create the meeting via the organizer\'s calendar.';
 
 // Organizer UPN field
 $string['upnfield'] = 'Organizer UPN field';

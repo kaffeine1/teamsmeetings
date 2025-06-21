@@ -62,6 +62,9 @@ class teams_api {
 
     /** @var bool Debug mode flag */
     private $debug_mode = false;
+
+    /** @var bool Fallback to calendar event creation */
+    private $use_calendar_fallback = false;
     
     /**
      * Constructor
@@ -72,6 +75,7 @@ class teams_api {
         $this->client_secret = get_config('mod_teamsmeetings', 'client_secret');
 
         $this->debug_mode = get_config('mod_teamsmeetings', 'debug_mode');
+        $this->use_calendar_fallback = get_config('mod_teamsmeetings', 'use_calendar_fallback');
         
         $this->get_access_token();
     }
@@ -217,6 +221,30 @@ class teams_api {
      * @return stdClass|false
      */
     public function create_meeting($meeting_data, $organizerupn) {
+        try {
+            return $this->create_meeting_direct($meeting_data, $organizerupn);
+        } catch (\Exception $e) {
+            if ($this->debug_mode) {
+                debugging('Direct meeting creation failed: ' . $e->getMessage(), DEBUG_DEVELOPER);
+            }
+            if ($this->use_calendar_fallback) {
+                if ($this->debug_mode) {
+                    debugging('Falling back to calendar API', DEBUG_DEVELOPER);
+                }
+                return $this->create_meeting_via_calendar($meeting_data, $organizerupn);
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Create a Teams meeting using onlineMeetings API
+     *
+     * @param stdClass $meeting_data
+     * @param string $organizerupn
+     * @return stdClass|false
+     */
+    private function create_meeting_direct($meeting_data, $organizerupn) {
         $organizerupn = trim($organizerupn);
         if (empty($organizerupn)) {
             throw new \coding_exception('Organizer UPN cannot be empty');
@@ -308,6 +336,79 @@ class teams_api {
 
         if (isset($result->id)) {
             return $result;
+        }
+
+        $message = isset($result->error->message) ? $result->error->message : $response;
+        throw new \moodle_exception('meetingcreationerror', 'teamsmeetings', '', $message, $response);
+    }
+
+    /**
+     * Create a Teams meeting by creating a calendar event.
+     *
+     * @param stdClass $meeting_data
+     * @param string $organizerupn
+     * @return stdClass
+     */
+    private function create_meeting_via_calendar($meeting_data, $organizerupn) {
+        $organizerupn = trim($organizerupn);
+        if (empty($organizerupn)) {
+            throw new \coding_exception('Organizer UPN cannot be empty');
+        }
+
+        if ($this->debug_mode) {
+            debugging('Creating meeting via calendar for ' . $organizerupn, DEBUG_DEVELOPER);
+        }
+
+        $url = self::GRAPH_API_URL . '/users/' . rawurlencode($organizerupn) . '/events';
+
+        $event = array(
+            'subject' => $meeting_data->name,
+            'isOnlineMeeting' => true,
+            'onlineMeetingProvider' => 'teamsForBusiness',
+            'start' => array(
+                'dateTime' => date('c', $meeting_data->start_time),
+                'timeZone' => 'UTC'
+            ),
+            'end' => array(
+                'dateTime' => date('c', $meeting_data->end_time ?? ($meeting_data->start_time + 3600)),
+                'timeZone' => 'UTC'
+            )
+        );
+
+        if (!empty($meeting_data->intro)) {
+            $event['body'] = array('contentType' => 'HTML', 'content' => strip_tags($meeting_data->intro));
+        }
+
+        if (!empty($meeting_data->recurring)) {
+            $event['recurrence'] = $this->build_calendar_recurrence_pattern($meeting_data);
+        }
+
+        $headers = array(
+            'Authorization: Bearer ' . $this->access_token,
+            'Content-Type: application/json'
+        );
+
+        $curl = new \curl();
+        $curl->setHeader($headers);
+        $response = $this->request_with_retry($curl, 'post', $url, json_encode($event));
+
+        if ($this->debug_mode) {
+            $info = $curl->get_info();
+            debugging('Calendar API HTTP status: ' . ($info['http_code'] ?? 'unknown'), DEBUG_DEVELOPER);
+            debugging('Calendar API raw response: ' . $response, DEBUG_DEVELOPER);
+        }
+
+        $result = json_decode($response);
+
+        if (isset($result->onlineMeeting)) {
+            $meeting = $result->onlineMeeting;
+            if (!isset($meeting->id) && isset($result->id)) {
+                $meeting->id = $result->id;
+            }
+            if (isset($meeting->joinUrl) && !isset($meeting->joinWebUrl)) {
+                $meeting->joinWebUrl = $meeting->joinUrl;
+            }
+            return $meeting;
         }
 
         $message = isset($result->error->message) ? $result->error->message : $response;
@@ -600,6 +701,32 @@ class teams_api {
         
         return $pattern;
     }
+
+    /**
+     * Build recurrence pattern for calendar events.
+     *
+     * @param stdClass $meeting_data
+     * @return array
+     */
+    private function build_calendar_recurrence_pattern($meeting_data) {
+        $pattern = array(
+            'pattern' => array(
+                'type' => $meeting_data->recurrence_pattern ?? 'weekly',
+                'interval' => 1
+            ),
+            'range' => array(
+                'type' => 'endDate',
+                'startDate' => date('Y-m-d', $meeting_data->start_time),
+                'endDate' => date('Y-m-d', $meeting_data->recurrence_end ?? strtotime('+6 months'))
+            )
+        );
+
+        if ($pattern['pattern']['type'] == 'weekly') {
+            $pattern['pattern']['daysOfWeek'] = array(ucfirst(strtolower(date('l', $meeting_data->start_time))));
+        }
+
+        return $pattern;
+    }
     
     /**
      * Parse duration from seconds to human readable
@@ -636,15 +763,27 @@ class teams_api {
         $curl = new \curl();
         $curl->setHeader($headers);
         $response = $this->request_with_retry($curl, 'get', $url);
-        
+
         $result = json_decode($response);
 
-        // The join link is stored in the joinWebUrl field returned by the API.
         if (isset($result->joinWebUrl)) {
             return $result->joinWebUrl;
         }
 
-        
+        if ($this->use_calendar_fallback) {
+            $url = self::GRAPH_API_URL . '/users/' . rawurlencode($organizerupn) . '/events/' . $meeting_id . '?$select=onlineMeeting';
+            $curl = new \curl();
+            $curl->setHeader($headers);
+            $response = $this->request_with_retry($curl, 'get', $url);
+            $result = json_decode($response);
+            if (isset($result->onlineMeeting->joinWebUrl)) {
+                return $result->onlineMeeting->joinWebUrl;
+            }
+            if (isset($result->onlineMeeting->joinUrl)) {
+                return $result->onlineMeeting->joinUrl;
+            }
+        }
+
         return false;
     }
 }
