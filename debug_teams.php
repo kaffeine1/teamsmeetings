@@ -152,6 +152,12 @@ echo html_writer::tag('h3', get_string('apitest', 'teamsmeetings'));
         echo 'Join URL: '.($meetinginfo->joinWebUrl ?? 'N/A').'<br>';
         echo html_writer::end_div();
 
+        if (isset($meetinginfo->creation_method) && $meetinginfo->creation_method === 'calendar') {
+            echo html_writer::div(get_string('createdviacalendar', 'teamsmeetings'), 'alert alert-info');
+        } else {
+            echo html_writer::div(get_string('createdviadirect', 'teamsmeetings'), 'alert alert-info');
+        }
+
         try {
             $viacalendar = isset($meetinginfo->creation_method) && $meetinginfo->creation_method === 'calendar';
             $teamsapi->delete_meeting($meetinginfo->id, $organizerupn, $viacalendar);

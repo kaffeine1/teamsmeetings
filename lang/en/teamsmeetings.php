@@ -215,6 +215,8 @@ $string['meetingcreatedviadirect'] = 'Meeting created successfully using direct 
 $string['calendarfallbackinfo'] = 'This meeting was created using Calendar integration due to license limitations';
 $string['directapiinfo'] = 'This meeting was created using direct Teams API';
 $string['creationmethod'] = 'Creation method';
+$string['createdviadirect'] = 'Created via direct API';
+$string['createdviacalendar'] = 'Created via calendar fallback';
 
 // Unmatched users
 $string['unmatchedusers'] = 'Unrecognised Teams users';
