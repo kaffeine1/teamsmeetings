@@ -222,7 +222,11 @@ class teams_api {
      */
     public function create_meeting($meeting_data, $organizerupn) {
         try {
-            return $this->create_meeting_direct($meeting_data, $organizerupn);
+            $meeting = $this->create_meeting_direct($meeting_data, $organizerupn);
+            if ($meeting && is_object($meeting) && !isset($meeting->creation_method)) {
+                $meeting->creation_method = 'direct';
+            }
+            return $meeting;
         } catch (\Exception $e) {
             if ($this->debug_mode) {
                 debugging('Direct meeting creation failed: ' . $e->getMessage(), DEBUG_DEVELOPER);
@@ -231,7 +235,11 @@ class teams_api {
                 if ($this->debug_mode) {
                     debugging('Falling back to calendar API', DEBUG_DEVELOPER);
                 }
-                return $this->create_meeting_via_calendar($meeting_data, $organizerupn);
+                $meeting = $this->create_meeting_via_calendar($meeting_data, $organizerupn);
+                if ($meeting && is_object($meeting) && !isset($meeting->creation_method)) {
+                    $meeting->creation_method = 'calendar';
+                }
+                return $meeting;
             }
             throw $e;
         }
@@ -244,7 +252,7 @@ class teams_api {
      * @param string $organizerupn
      * @return stdClass|false
      */
-    private function create_meeting_direct($meeting_data, $organizerupn) {
+    protected function create_meeting_direct($meeting_data, $organizerupn) {
         $organizerupn = trim($organizerupn);
         if (empty($organizerupn)) {
             throw new \coding_exception('Organizer UPN cannot be empty');
@@ -349,7 +357,7 @@ class teams_api {
      * @param string $organizerupn
      * @return stdClass
      */
-    private function create_meeting_via_calendar($meeting_data, $organizerupn) {
+    protected function create_meeting_via_calendar($meeting_data, $organizerupn) {
         $organizerupn = trim($organizerupn);
         if (empty($organizerupn)) {
             throw new \coding_exception('Organizer UPN cannot be empty');
