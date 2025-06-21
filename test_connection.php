@@ -18,7 +18,7 @@
  * Test connection to Microsoft Teams API.
  *
  * @package    mod_teamsmeetings
- * @copyright  2025 Michele Dipace
+ * @copyright  2025 Michele Dipace (michele.dipace@kaffeine.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

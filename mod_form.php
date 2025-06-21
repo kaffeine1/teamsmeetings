@@ -18,7 +18,7 @@
  * Form for creating and editing Teams meeting instances
  *
  * @package    mod_teamsmeetings
- * @copyright  2025 Michele Dipace
+ * @copyright  2025 Michele Dipace (michele.dipace@kaffeine.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

@@ -202,7 +202,7 @@ GPL v3 o successiva
 
 ## Crediti
 
-Sviluppato da Michele Dipace (Miki)
+Sviluppato da Michele Dipace (michele.dipace@kaffeine.net)
 
 ## ⚠️ Avviso Importante
 
