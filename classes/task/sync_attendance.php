@@ -67,7 +67,8 @@ class sync_attendance extends \core\task\scheduled_task {
                     (tm.end_time = 0 AND tm.start_time < :now1) OR
                     (tm.end_time > :sevendaysago AND tm.end_time < :now2)
                   )
-                  AND (tm.last_sync IS NULL OR tm.last_sync < :synctime)";
+                  AND (tm.last_sync IS NULL OR tm.last_sync < :synctime)
+                ORDER BY tm.id";
         
         $params = array(
             'now1' => $now,
@@ -76,25 +77,31 @@ class sync_attendance extends \core\task\scheduled_task {
             'synctime' => $now - 300 // Don't sync more than once every 5 minutes
         );
         
-        $meetings = $DB->get_records_sql($sql, $params, 0, 20); // Limit to 20 meetings
-        // TODO: schedule per-meeting ad-hoc tasks for improved scalability.
-        
-        if (empty($meetings)) {
-            if ($debugmode) {
-                mtrace('No meetings to sync.');
-            }
-            return;
-        }
-        
-        foreach ($meetings as $meeting) {
-            $task = new \mod_teamsmeetings\task\sync_meeting_attendance();
-            $task->set_component('mod_teamsmeetings');
-            $task->set_custom_data(['meetingid' => $meeting->id]);
-            \core\task\manager::queue_adhoc_task($task, true);
+        $batchsize = 20; // Small batches prevent long running scheduled tasks.
+        $offset = 0;
+        do {
+            $meetings = $DB->get_records_sql($sql, $params, $offset, $batchsize);
 
-            if ($debugmode) {
-                mtrace("Queued sync for meeting: {$meeting->name} (ID: {$meeting->id})");
+            if (empty($meetings)) {
+                if ($offset === 0 && $debugmode) {
+                    mtrace('No meetings to sync.');
+                }
+                break;
             }
-        }
+
+            foreach ($meetings as $meeting) {
+                // Queue an ad-hoc task per meeting so processing can run in parallel.
+                $task = new \mod_teamsmeetings\task\sync_meeting_attendance();
+                $task->set_component('mod_teamsmeetings');
+                $task->set_custom_data(['meetingid' => $meeting->id]);
+                \core\task\manager::queue_adhoc_task($task, true);
+
+                if ($debugmode) {
+                    mtrace("Queued sync for meeting: {$meeting->name} (ID: {$meeting->id})");
+                }
+            }
+
+            $offset += $batchsize;
+        } while (count($meetings) === $batchsize);
     }
 }
