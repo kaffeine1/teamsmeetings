@@ -439,6 +439,10 @@ class teams_api {
             return false;
         }
 
+        if (preg_match('/^(AAMk|AQMk)/', $meeting_data->meeting_id)) {
+            return $this->update_meeting_via_calendar($meeting_data, $organizerupn);
+        }
+
         $url = self::GRAPH_API_URL . '/users/' . rawurlencode($organizerupn) . '/onlineMeetings/' . $meeting_data->meeting_id;
         
         $update_data = array(
@@ -455,6 +459,54 @@ class teams_api {
         $curl = new \curl();
         $curl->setHeader($headers);
         $response = $this->request_with_retry($curl, 'patch', $url, json_encode($update_data));
+
+        $result = json_decode($response);
+        if ($response === false || isset($result->error)) {
+            $message = isset($result->error->message) ? $result->error->message : $response;
+            throw new \moodle_exception('meetingupdateerror', 'teamsmeetings', '', $message, $response);
+        }
+
+        return true;
+    }
+
+    /**
+     * Update a meeting created via the calendar event endpoint.
+     *
+     * @param stdClass $meeting_data
+     * @param string $organizerupn
+     * @return bool
+     */
+    protected function update_meeting_via_calendar($meeting_data, $organizerupn) {
+        $url = self::GRAPH_API_URL . '/users/' . rawurlencode($organizerupn) . '/events/' . $meeting_data->meeting_id;
+
+        $update = array(
+            'subject' => $meeting_data->name,
+            'start' => array(
+                'dateTime' => date('c', $meeting_data->start_time),
+                'timeZone' => 'UTC'
+            ),
+            'end' => array(
+                'dateTime' => date('c', $meeting_data->end_time),
+                'timeZone' => 'UTC'
+            )
+        );
+
+        if (!empty($meeting_data->intro)) {
+            $update['body'] = array('contentType' => 'HTML', 'content' => strip_tags($meeting_data->intro));
+        }
+
+        if (!empty($meeting_data->recurring)) {
+            $update['recurrence'] = $this->build_calendar_recurrence_pattern($meeting_data);
+        }
+
+        $headers = array(
+            'Authorization: Bearer ' . $this->access_token,
+            'Content-Type: application/json'
+        );
+
+        $curl = new \curl();
+        $curl->setHeader($headers);
+        $response = $this->request_with_retry($curl, 'patch', $url, json_encode($update));
 
         $result = json_decode($response);
         if ($response === false || isset($result->error)) {
