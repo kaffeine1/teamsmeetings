@@ -153,7 +153,8 @@ echo html_writer::tag('h3', get_string('apitest', 'teamsmeetings'));
         echo html_writer::end_div();
 
         try {
-            $teamsapi->delete_meeting($meetinginfo->id, $organizerupn);
+            $viacalendar = isset($meetinginfo->creation_method) && $meetinginfo->creation_method === 'calendar';
+            $teamsapi->delete_meeting($meetinginfo->id, $organizerupn, $viacalendar);
             echo html_writer::div('Test meeting removed.', 'alert alert-info');
         } catch (Exception $del) {
             echo html_writer::div('Could not delete test meeting: '.$del->getMessage(), 'alert alert-warning');
