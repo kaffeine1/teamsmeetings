@@ -75,6 +75,20 @@ function teamsmeetings_add_instance($data, $mform = null) {
             }
             $data->meeting_id = $meeting_info->id;
             $data->join_url = $meeting_info->joinWebUrl;
+
+            if (isset($meeting_info->creation_method)) {
+                if ($meeting_info->creation_method === 'calendar') {
+                    \core\notification::add(
+                        get_string('meetingcreatedviacalendar', 'mod_teamsmeetings'),
+                        \core\output\notification::NOTIFY_INFO
+                    );
+                } else {
+                    \core\notification::add(
+                        get_string('meetingcreatedviadirect', 'mod_teamsmeetings'),
+                        \core\output\notification::NOTIFY_SUCCESS
+                    );
+                }
+            }
         }
     } catch (\moodle_exception $e) {
         $msg = teamsmeetings_extract_error_message($e);
