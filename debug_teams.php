@@ -64,7 +64,7 @@ if (!$tenantid || !$clientid || !$clientsecret) {
 // 2. Determine organizer UPN.
 $upnfield = get_config('mod_teamsmeetings', 'upn_field') ?: 'email';
 echo html_writer::tag('h3', get_string('upncheck', 'teamsmeetings'));
-echo '<strong>UPN field:</strong> '.$upnfield.'<br>';
+echo '<strong>UPN field:</strong> '.s($upnfield).'<br>';
 
 if ($upnfield === 'username') {
     $organizerupn = $USER->username;
@@ -75,7 +75,7 @@ if ($upnfield === 'username') {
     $organizerupn = $USER->email;
 }
 
-echo '<strong>Resolved UPN:</strong> '.$organizerupn.'<br>';
+echo '<strong>Resolved UPN:</strong> '.s($organizerupn).'<br>';
 
 if (!filter_var($organizerupn, FILTER_VALIDATE_EMAIL)) {
     echo $OUTPUT->notification(get_string('invalidupn', 'teamsmeetings'), \core\output\notification::NOTIFY_ERROR);
@@ -138,7 +138,7 @@ echo html_writer::tag('h3', get_string('apitest', 'teamsmeetings'));
     echo 'Name: '.$testmeeting->name.'<br>';
     echo 'Start: '.userdate($testmeeting->start_time).'<br>';
     echo 'End: '.userdate($testmeeting->end_time).'<br>';
-    echo 'Organizer: '.$organizerupn.'<br>';
+    echo 'Organizer: '.s($organizerupn).'<br>';
     echo html_writer::end_div();
 
     echo html_writer::div('Creating meeting...', 'alert alert-warning');
@@ -157,7 +157,7 @@ echo html_writer::tag('h3', get_string('apitest', 'teamsmeetings'));
             $teamsapi->delete_meeting($meetinginfo->id, $organizerupn, $viacalendar);
             echo html_writer::div('Test meeting removed.', 'alert alert-info');
         } catch (Exception $del) {
-            echo html_writer::div('Could not delete test meeting: '.$del->getMessage(), 'alert alert-warning');
+            echo html_writer::div('Could not delete test meeting: '.s($del->getMessage()), 'alert alert-warning');
         }
     } else {
         echo $OUTPUT->notification('Meeting creation failed', \core\output\notification::NOTIFY_ERROR);
@@ -177,7 +177,7 @@ echo html_writer::tag('h3', get_string('apitest', 'teamsmeetings'));
         $jsonpart = substr($e->getMessage(), $jsonstart);
         $decoded = json_decode($jsonpart, true);
         if ($decoded) {
-            echo '<pre>'.json_encode($decoded, JSON_PRETTY_PRINT).'</pre>';
+            echo '<pre>'.s(json_encode($decoded, JSON_PRETTY_PRINT)).'</pre>';
         }
     }
     echo html_writer::end_div();
