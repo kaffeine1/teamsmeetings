@@ -134,6 +134,8 @@ $tableheaders = array(
     get_string('actions')
 );
 
+$table->is_downloading($download, 'teams_attendance_' . $teamsmeetings->id);
+
 if (!$table->is_downloading()) {
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('attendancereport', 'teamsmeetings') . ': ' . format_string($teamsmeetings->name));
@@ -218,7 +220,6 @@ $table->caption = get_string('attendancereport', 'teamsmeetings');
 
 $table->show_download_buttons_at(array(TABLE_P_BOTTOM));
 $table->is_downloadable(true);
-$table->is_downloading($download, 'teams_attendance_' . $teamsmeetings->id);
 
 $table->setup();
 
