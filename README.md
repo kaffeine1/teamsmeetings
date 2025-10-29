@@ -27,7 +27,7 @@ A Moodle plugin that allows teachers to create and manage Microsoft Teams meetin
 1. **Download the plugin**
    ```bash
    cd /path/to/moodle/mod
-   git clone https://github.com/yourusername/moodle-mod_teamsmeetings.git teamsmeetings
+   git clone https://github.com/kaffeine1/teamsmeetings.git teamsmeetings
    ```
 
 2. **Install via Moodle**
