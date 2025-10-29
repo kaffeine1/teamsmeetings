@@ -1,5 +1,10 @@
 # Teams Meeting Plugin for Moodle
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Moodle](https://img.shields.io/badge/Moodle-4.1%2B-orange.svg)](https://moodle.org)
+[![PHP](https://img.shields.io/badge/PHP-7.4%2B-777BB4.svg)](https://www.php.net/)
+[![Version](https://img.shields.io/badge/version-1.0.1-green.svg)](https://github.com/kaffeine1/teamsmeetings/releases)
+
 A Moodle plugin that allows teachers to create and manage Microsoft Teams meetings directly from their courses, with automatic attendance tracking.
 
 ## Key Features
@@ -27,7 +32,7 @@ A Moodle plugin that allows teachers to create and manage Microsoft Teams meetin
 1. **Download the plugin**
    ```bash
    cd /path/to/moodle/mod
-   git clone https://github.com/yourusername/moodle-mod_teamsmeetings.git teamsmeetings
+   git clone https://github.com/kaffeine1/teamsmeetings.git teamsmeetings
    ```
 
 2. **Install via Moodle**
@@ -183,7 +188,16 @@ The plugin:
 For issues or questions:
 1. Check the documentation
 2. Review Moodle logs
-3. Open an issue on GitHub
+3. Open an issue on [GitHub](https://github.com/kaffeine1/teamsmeetings/issues)
+
+## Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on:
+- How to report bugs
+- How to suggest features
+- Development setup and testing
+- Coding standards
+- Pull request process
 
 ## Running Tests
 

@@ -1,0 +1,51 @@
+# IDE and Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.settings/
+.buildpath
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Testing
+coverage/
+.phpunit.result.cache
+phpunit.xml.local
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+*.cache
+
+# Environment files (should never be committed)
+.env
+.env.local
+.env.*.local
+
+# Composer (if used)
+/vendor/
+composer.lock
+
+# Node modules (if using any build tools)
+node_modules/
+package-lock.json
+
+# Build artifacts
+/build/
+/dist/
+
+# Backup files
+*.orig
