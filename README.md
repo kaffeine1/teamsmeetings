@@ -1,223 +1,228 @@
-# Plugin Teams Meeting per Moodle
+# Teams Meeting Plugin for Moodle
 
-Plugin per Moodle che permette ai docenti di creare e gestire meeting Microsoft Teams direttamente dai corsi, con tracciamento automatico delle presenze.
+A Moodle plugin that allows teachers to create and manage Microsoft Teams meetings directly from their courses, with automatic attendance tracking.
 
-## Caratteristiche principali
+## Key Features
 
-- Creazione meeting Teams direttamente da Moodle
-- Se la creazione diretta fallisce, il plugin prova automaticamente via calendario (richiede permesso Calendars.ReadWrite)
-- Il metodo di creazione (API diretta o calendario) viene salvato per gestire correttamente aggiornamenti e cancellazioni
-- Integrazione completa con Microsoft Teams
-- Tracciamento automatico delle presenze
-- Report dettagliati con ora di connessione/disconnessione
-- Export presenze in CSV/Excel/PDF
-- Meeting ricorrenti
-- Notifiche e promemoria automatici
-- Registrazione automatica meeting (opzionale)
+- Create Teams meetings directly from Moodle
+- If direct creation fails, the plugin automatically tries via calendar (requires Calendars.ReadWrite permission)
+- The creation method (direct API or calendar) is saved to properly handle updates and deletions
+- Full Microsoft Teams integration
+- Automatic attendance tracking
+- Detailed reports with join/leave times
+- Export attendance data in CSV/Excel/PDF formats
+- Recurring meetings
+- Automatic notifications and reminders
+- Automatic meeting recording (optional)
 
-## Requisiti
+## Requirements
 
-- Moodle 4.1 o superiore
-- PHP 7.4 o superiore
-- Account Microsoft 365 con licenza Teams
-- App registrata in Azure Active Directory
+- Moodle 4.1 or higher
+- PHP 7.4 or higher
+- Microsoft 365 account with Teams license
+- App registered in Azure Active Directory
 
-## Installazione
+## Installation
 
-1. **Download del plugin**
+1. **Download the plugin**
    ```bash
    cd /path/to/moodle/mod
    git clone https://github.com/yourusername/moodle-mod_teamsmeetings.git teamsmeetings
    ```
 
-2. **Installazione via Moodle**
-   - Accedi come amministratore
-   - Vai su "Amministrazione del sito" → "Notifiche"
-   - Segui il processo di installazione
+2. **Install via Moodle**
+   - Log in as administrator
+   - Go to "Site administration" → "Notifications"
+   - Follow the installation process
 
-## Configurazione Azure AD
+## Azure AD Configuration
 
-### 1. Registrare l'applicazione in Azure
+### 1. Register the Application in Azure
 
-1. Accedi al [portale Azure](https://portal.azure.com)
-2. Vai su "Azure Active Directory" → "Registrazioni app"
-3. Clicca "Nuova registrazione"
-4. Configura:
-   - Nome: `Moodle Teams Integration`
-   - Tipi di account supportati: "Account in questa directory organizzativa"
-   - URI di reindirizzamento: lascia vuoto per ora
+1. Log in to the [Azure portal](https://portal.azure.com)
+2. Go to "Azure Active Directory" → "App registrations"
+3. Click "New registration"
+4. Configure:
+   - Name: `Moodle Teams Integration`
+   - Supported account types: "Accounts in this organizational directory only"
+   - Redirect URI: leave blank for now
 
-### 2. Configurare i permessi API
+### 2. Configure API Permissions
 
-Nella tua app registrata:
+In your registered app:
 
-1. Vai su "Autorizzazioni API"
-2. Clicca "Aggiungi un'autorizzazione"
-3. Seleziona "Microsoft Graph"
-4. Scegli "Autorizzazioni applicazione"
-5. Aggiungi questi permessi:
-   - `OnlineMeetings.ReadWrite.All` - Per creare e gestire meeting
-   - `OnlineMeetingArtifact.Read.All` - Per leggere i report presenze (CRITICO!)
-   - `User.Read.All` - Per mappare utenti Teams con Moodle
-   - `Calendars.ReadWrite` - Per integrazione calendario (opzionale)
-   
-   **IMPORTANTE**: Il permesso `OnlineMeetingArtifact.Read.All` è essenziale per il tracciamento presenze e richiede privilegi elevati. Potrebbe richiedere approvazione speciale dall'amministratore Azure AD.
+1. Go to "API permissions"
+2. Click "Add a permission"
+3. Select "Microsoft Graph"
+4. Choose "Application permissions"
+5. Add these permissions:
+   - `OnlineMeetings.ReadWrite.All` - To create and manage meetings
+   - `OnlineMeetingArtifact.Read.All` - To read attendance reports (CRITICAL!)
+   - `User.Read.All` - To map Teams users with Moodle
+   - `Calendars.ReadWrite` - For calendar integration (optional)
 
-6. Clicca "Concedi consenso amministratore"
+   **IMPORTANT**: The `OnlineMeetingArtifact.Read.All` permission is essential for attendance tracking and requires elevated privileges. It may require special approval from the Azure AD administrator.
 
-### 3. Creare il client secret
+6. Click "Grant admin consent"
 
-1. Vai su "Certificati e segreti"
-2. Clicca "Nuovo segreto client"
-3. Aggiungi descrizione e scadenza
-4. **Copia subito il valore del segreto** (non sarà più visibile)
+### 3. Create Client Secret
 
-### 4. Ottenere gli ID necessari
+1. Go to "Certificates & secrets"
+2. Click "New client secret"
+3. Add description and expiration
+4. **Immediately copy the secret value** (it won't be visible again)
 
-Dalla pagina "Panoramica" dell'app, copia:
-- **ID applicazione (client)**
-- **ID directory (tenant)**
+### 4. Get the Required IDs
 
-## Configurazione in Moodle
+From the app's "Overview" page, copy:
+- **Application (client) ID**
+- **Directory (tenant) ID**
 
-1. Vai su "Amministrazione del sito" → "Plugin" → "Moduli attività" → "Teams Meeting"
-2. Inserisci:
-   - **Tenant ID**: ID directory copiato da Azure
-   - **Client ID**: ID applicazione copiato da Azure
-   - **Client Secret**: Segreto client creato
+## Moodle Configuration
 
-3. Configura le impostazioni predefinite secondo le tue preferenze
+1. Go to "Site administration" → "Plugins" → "Activity modules" → "Teams Meeting"
+2. Enter:
+   - **Tenant ID**: Directory ID copied from Azure
+   - **Client ID**: Application ID copied from Azure
+   - **Client Secret**: Client secret created
 
-## Utilizzo
+3. Configure default settings according to your preferences
 
-### Per i docenti
+## Usage
 
-1. **Creare un meeting**
-   - Nel corso, attiva modifica
-   - Aggiungi attività → Teams Meeting
-   - Configura nome, data/ora, opzioni
-   - Salva
+### For Teachers
 
-2. **Visualizzare presenze**
-   - Apri l'attività Teams Meeting
-   - Clicca "Visualizza report presenze"
-   - Esporta in vari formati se necessario
+1. **Create a meeting**
+   - In the course, turn editing on
+   - Add activity → Teams Meeting
+   - Configure name, date/time, options
+   - Save
 
-3. **Sincronizzare presenze**
-   - Nel report presenze, clicca "Sincronizza presenze"
-   - I dati vengono aggiornati da Microsoft Teams
+2. **View attendance**
+   - Open the Teams Meeting activity
+   - Click "View attendance report"
+   - Export in various formats if needed
 
-### Per gli studenti
+3. **Sync attendance**
+   - In the attendance report, click "Sync attendance"
+   - Data is updated from Microsoft Teams
 
-1. Accedi al corso
-2. Clicca sull'attività Teams Meeting
-3. Clicca "Partecipa al meeting" quando disponibile
-4. Verrai reindirizzato a Teams
+### For Students
 
-## Tracciamento presenze
+1. Access the course
+2. Click on the Teams Meeting activity
+3. Click "Join meeting" when available
+4. You will be redirected to Teams
 
-Il plugin traccia automaticamente:
-- Ora di ingresso al meeting
-- Ora di uscita
-- Durata totale di partecipazione
-- Numero di sessioni (se l'utente entra/esce più volte)
-- Percentuale di presenza rispetto alla durata del meeting
+## Attendance Tracking
 
-### Configurazione durata minima
+The plugin automatically tracks:
+- Meeting join time
+- Meeting leave time
+- Total participation duration
+- Number of sessions (if the user joins/leaves multiple times)
+- Attendance percentage relative to meeting duration
 
-Puoi impostare una durata minima di partecipazione per considerare uno studente "presente". 
-Default: 10 minuti.
+### Minimum Duration Configuration
 
-## Risoluzione problemi
+You can set a minimum participation duration to consider a student "present".
+Default: 10 minutes.
 
-### Errore "Impossibile ottenere il token di accesso"
+## Troubleshooting
 
-Verifica:
-1. Client ID e Tenant ID corretti
-2. Client secret non scaduto
-3. Permessi API concessi correttamente
+### Error "Unable to obtain access token"
 
-### Meeting non si crea
+Check:
+1. Client ID and Tenant ID are correct
+2. Client secret is not expired
+3. API permissions are correctly granted
 
-Controlla:
-1. L'utente ha una licenza Teams valida
-2. I permessi dell'app Azure sono corretti
-3. Il consenso amministratore è stato concesso
-4. Attiva la modalità debug e visita <code>/mod/teamsmeetings/debug_teams.php</code> per un test rapido
-5. In caso di errore, se abilitato il fallback calendario, controlla che il permesso Calendars.ReadWrite sia presente
+### Meeting not created
 
-### Presenze non sincronizzate
+Check:
+1. The user has a valid Teams license
+2. Azure app permissions are correct
+3. Admin consent has been granted
+4. Enable debug mode and visit `/mod/teamsmeetings/debug_teams.php` for a quick test
+5. If there's an error and calendar fallback is enabled, check that the Calendars.ReadWrite permission is present
 
-Possibili cause:
-1. Il meeting non è ancora terminato
-2. Report non ancora generato da Teams (può richiedere fino a 48 ore)
-3. Permessi insufficienti per leggere i report
-4. **NOTA**: L'API per i report presenze utilizza l'endpoint Beta di Microsoft Graph, che potrebbe avere limitazioni o cambiamenti
+### Attendance not synced
 
-### Utenti non riconosciuti nel report
+Possible causes:
+1. The meeting has not ended yet
+2. Report not yet generated by Teams (may take up to 48 hours)
+3. Insufficient permissions to read reports
+4. **NOTE**: The attendance report API uses Microsoft Graph Beta endpoint, which may have limitations or changes
 
-Il plugin cerca di mappare utenti Teams con utenti Moodle tramite email. Se alcuni partecipanti non vengono riconosciuti:
-1. Verifica che usino la stessa email su Teams e Moodle
-2. Gli utenti esterni (guest) potrebbero non essere mappabili automaticamente
-3. Controlla la tabella `teamsmeetings_unmatched_users` per vedere gli utenti non riconosciuti
+### Unrecognized users in report
+
+The plugin tries to map Teams users with Moodle users via email. If some participants are not recognized:
+1. Verify they use the same email on Teams and Moodle
+2. External users (guests) may not be automatically mappable
+3. Check the `teamsmeetings_unmatched_users` table to see unrecognized users
 
 ## Cron Jobs
 
-Il plugin usa il cron di Moodle per:
-- Sincronizzare automaticamente le presenze
-- Inviare promemoria meeting
-- Pulire dati vecchi
+The plugin uses Moodle's cron to:
+- Automatically sync attendance
+- Send meeting reminders
+- Clean up old data
 
-Frequenza consigliata: ogni 5 minuti
+Recommended frequency: every 5 minutes
 
-## Privacy e GDPR
+## Privacy and GDPR
 
-Il plugin:
-- Memorizza solo dati necessari per il funzionamento
-- Supporta le API privacy di Moodle
-- Permette l'export/cancellazione dati utente
-- Non condivide dati con terze parti (oltre Microsoft per Teams)
+The plugin:
+- Stores only data necessary for operation
+- Supports Moodle's privacy API
+- Allows user data export/deletion
+- Does not share data with third parties (except Microsoft for Teams)
 
-## Supporto
+## Support
 
-Per problemi o domande:
-1. Controlla la documentazione
-2. Verifica i log di Moodle
-3. Apri una issue su GitHub
+For issues or questions:
+1. Check the documentation
+2. Review Moodle logs
+3. Open an issue on GitHub
 
-## Esecuzione dei test
+## Running Tests
 
-I test unitari devono essere eseguiti dalla root di un'installazione Moodle. In
-particolare occorre inizializzare l'ambiente di PHPUnit e lanciare i test del
-plugin con i seguenti comandi:
+Unit tests must be run from the root of a Moodle installation. In particular, you need to initialize the PHPUnit environment and run the plugin tests with the following commands:
 
 ```bash
 php admin/tool/phpunit/cli/init.php
 vendor/bin/phpunit mod/teamsmeetings
 ```
 
-## Licenza
+## License
 
-GPL v3 o successiva
+GPL v3 or later
 
-## Crediti
+## Credits
 
-Sviluppato da Michele Dipace (michele.dipace@kaffeine.net)
+Developed by Michele Dipace (michele.dipace@kaffeine.net)
 
-## ⚠️ Avviso Importante
+## ⚠️ Important Notice
 
-**Prima di utilizzare in produzione:**
-1. Testa approfonditamente in un ambiente di staging
-2. Verifica che i permessi API siano configurati correttamente
-3. Assicurati che il report presenze funzioni (potrebbe richiedere permessi Azure AD elevati)
-4. Monitora i log per eventuali errori API durante le prime sincronizzazioni
-5. Considera che l'API Beta di Microsoft potrebbe subire modifiche
+**Before using in production:**
+1. Test thoroughly in a staging environment
+2. Verify that API permissions are correctly configured
+3. Ensure attendance reports work (may require elevated Azure AD permissions)
+4. Monitor logs for any API errors during initial syncs
+5. Consider that Microsoft's Beta API may undergo changes
 
 ## Changelog
 
+### v1.0.1 (2025-06-16)
+- Current stable version
+- Teams meeting creation with automatic fallback to calendar method
+- Attendance tracking
+- Detailed reports
+- Data export in various formats (CSV, Excel, PDF)
+
 ### v1.0.0 (2024-06-16)
-- Prima release
-- Creazione meeting Teams
-- Tracciamento presenze
-- Report dettagliati
-- Export dati in vari formati (CSV, Excel, PDF)
+- First release
+- Teams meeting creation
+- Attendance tracking
+- Detailed reports
+- Data export in various formats (CSV, Excel, PDF)
